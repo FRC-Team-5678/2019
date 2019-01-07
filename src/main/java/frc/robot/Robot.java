@@ -26,6 +26,9 @@ NetworkTableEntry tx = table.getEntry("tx");
 NetworkTableEntry ty = table.getEntry("ty");
 NetworkTableEntry ta = table.getEntry("ta");
 
+
+
+
 //read values periodically
 double x = tx.getDouble(0.0);
 double y = ty.getDouble(0.0);
@@ -51,6 +54,7 @@ double area = ta.getDouble(0.0);
  
   @Override
   public void robotInit() {
+    table.getEntry("camMode").setNumber(1);
    
   }
 
