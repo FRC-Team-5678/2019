@@ -78,21 +78,21 @@ double area = ta.getDouble(0.0);
   public void teleopPeriodic() {
     double v = tv.getDouble(0.0);
 
-      if(v == 0){
+      if(v == 0){//if no target is in view
         left.set(.3);
         
       }
-      else{
+      else{//if target is in camra view
         double xOffset = tx.getDouble(0.0);
         double yOffset = ty.getDouble(0.0);
         
-        if(Math.abs(xOffset)>6){
+        if(Math.abs(xOffset)>6){//if the target is far away from center
           System.out.println("0.02");
           System.out.println(0.02 * xOffset);
           left.set(0.03 * xOffset);
           right.set(0.03* xOffset);
         }
-        else if(Math.abs(xOffset)>3){
+        else if(Math.abs(xOffset)>3){//if target is close to center
           System.out.println("0.05");
           System.out.println(0.15 * xOffset);
           left.set(0.07 * xOffset);
@@ -101,7 +101,6 @@ double area = ta.getDouble(0.0);
         else{
           if(main.getTriggerPressed()){
             myRobot.arcadeDrive(.2, 0);
-            Timer.delay(1);
           }
         }
       }
@@ -127,8 +126,8 @@ double area = ta.getDouble(0.0);
   //  System.out.println(xOffset);
   //  System.out.println(Math.abs(xOffset));
    
-  double yOffset = ty.getDouble(0.0);
-  System.out.println((26-21.5)/Math.tan(5+yOffset));
+  //double yOffset = ty.getDouble(0.0);
+  //System.out.println((26-21.5)/Math.tan(5+yOffset));
   }
 
 }
