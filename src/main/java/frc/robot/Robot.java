@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -21,6 +23,16 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Robot extends TimedRobot {
 
+  //factor to convert to inches
+  private static final double ultraToinch = 41.8175;
+
+  //speed constant for encoder moving forword
+  private static final double ultraSpeed = .05;
+
+  //ultra sonic input
+ //AnalogInput ultraSonic = new AnalogInput(0);
+ //Ultrasonic us = new Ultrasonic(1,0);
+ 
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 NetworkTableEntry tx = table.getEntry("tx");
@@ -57,8 +69,9 @@ double area = ta.getDouble(0.0);
  
   @Override
   public void robotInit() {
-    table.getEntry("camMode").setNumber(1);
    
+    
+
   }
 
   @Override
@@ -76,13 +89,15 @@ double area = ta.getDouble(0.0);
 
   @Override
   public void teleopPeriodic() {
+    //myRobot.setMaxOutput(.5);
+    //myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0));
     double v = tv.getDouble(0.0);
 
-      if(v == 0){//if no target is in view
-        left.set(.3);
+    //if(v == 0){//if no target is in view
+     //   left.set(.3);
         
-      }
-      else{//if target is in camra view
+     // }
+      if(true){//if target is in camra view
         double xOffset = tx.getDouble(0.0);
         double yOffset = ty.getDouble(0.0);
         
@@ -99,13 +114,12 @@ double area = ta.getDouble(0.0);
           right.set(0.07 * xOffset);
         }
         else{
-          if(main.getTriggerPressed()){
-            myRobot.arcadeDrive(.2, 0);
+          
           }
         }
       }
    
-   
+        
    
     /*if(main.getTrigger()){
     double xOffset = tx.getDouble(0.0);
@@ -114,7 +128,7 @@ double area = ta.getDouble(0.0);
     }*/
   
 
-  }
+  
 
   @Override
   public void testInit() {
@@ -122,6 +136,10 @@ double area = ta.getDouble(0.0);
 
   @Override
   public void testPeriodic() {
+   //System.out.println(us.getRangeInches());
+//System.out.println(ultraSonic.getVoltage()*ultraToinch);
+//Timer.delay(.001);
+
   //   double xOffset = tx.getDouble(0.0);
   //  System.out.println(xOffset);
   //  System.out.println(Math.abs(xOffset));
