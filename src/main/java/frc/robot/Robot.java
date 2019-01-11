@@ -18,10 +18,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.SerialPort;
 
 
 
 public class Robot extends TimedRobot {
+    // Aurdino testing
+
+    SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
 
   //factor to convert to inches
   private static final double ultraToinch = 41.8175;
@@ -61,16 +65,15 @@ double area = ta.getDouble(0.0);
   //drive setup
   DifferentialDrive myRobot = new DifferentialDrive(left,right);
  
+  
  // Joystick setup
   Joystick main = new Joystick(0);
   double speedX = main.getRawAxis(0);  //change to whats needed
   double rotatZ = main.getRawAxis(1);  //change to whats needed
   
  
-  @Override
   public void robotInit() {
-   
-    
+    sp.enableTermination();
 
   }
 
@@ -132,10 +135,14 @@ double area = ta.getDouble(0.0);
 
   @Override
   public void testInit() {
+    
   }
 
   @Override
   public void testPeriodic() {
+    System.out.println(sp.readString(10));
+    sp.flush();
+
    //System.out.println(us.getRangeInches());
 //System.out.println(ultraSonic.getVoltage()*ultraToinch);
 //Timer.delay(.001);
