@@ -151,10 +151,20 @@ double area = ta.getDouble(0.0);
    // sp.flush();
    String spread = sp.readString();
   String t1 = "";
+  
+  int foo = 0;
+//try {
+  spread = spread.trim();
+  System.out.println(spread + " " + spread.length());
+    foo = Integer.parseInt(spread);
+ // } catch (NumberFormatException e) {
+    
+//}
+  
   //int foo = Integer.valueOf(spread);
   //int foo = Integer.parseInt(spread);
-  // if(false){
-     //System.out.println("yup its working");
+  //if(){
+    // System.out.println("yup its working");
     
    //}
    //else{
