@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
@@ -26,7 +27,7 @@ public class Robot extends TimedRobot {
     // Aurdino testing
 
     SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
-
+ String number = sp.readString();
   //factor to convert to inches
   private static final double ultraToinch = 41.8175;
 
@@ -74,6 +75,7 @@ double area = ta.getDouble(0.0);
  
   public void robotInit() {
     sp.enableTermination();
+    sp.setTimeout(.02);
 
   }
 
@@ -140,8 +142,15 @@ double area = ta.getDouble(0.0);
 
   @Override
   public void testPeriodic() {
-    System.out.println(sp.readString(10));
-    sp.flush();
+    //System.out.println(sp.readString(100));
+    //String test = (sp.readString(10));
+    //System.out.println(test);
+   // sp.flush();
+   number = sp.readString();
+   if(number < 200){
+
+   }
+    
 
    //System.out.println(us.getRangeInches());
 //System.out.println(ultraSonic.getVoltage()*ultraToinch);
