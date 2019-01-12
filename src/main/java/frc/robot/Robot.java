@@ -116,6 +116,20 @@ System.out.println(foo);
      System.out.println("active");
    }
    //myRobot.stopMotor();
+   if(main.getTriggerPressed()){
+    if(hatchState == false){
+       hatch.set(DoubleSolenoid.Value.kReverse);
+     hatchState = true;
+     System.out.println("true");
+     //hatch.set(DoubleSolenoid.Value.kOff);
+     //System.out.println(hatch.get());
+   }
+   else{
+     hatch.set(DoubleSolenoid.Value.kForward);
+     hatchState = false;
+   }
+     
+   } 
     
     
     
