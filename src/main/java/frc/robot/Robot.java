@@ -9,6 +9,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -25,7 +26,9 @@ public class Robot extends TimedRobot {
 
 
   Compressor cmain = new Compressor(0);
-  Solenoid hatch = new Solenoid(0);
+  DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
+
+ 
 
  /* NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 NetworkTableEntry tx = table.getEntry("tx");
@@ -83,15 +86,20 @@ double area = ta.getDouble(0.0);*/
   @Override
   public void teleopPeriodic() {
     //double v = tv.getDouble(0.0);
-    cmain.setClosedLoopControl(true);
-
-    hatch.set(false);
+    //hatch.set(DoubleSolenoid.Value.kOff);
     
-    if(main.getTriggerPressed()){
-      hatch.set(true);
-    }
-    else if(main.getTriggerReleased()){
-      hatch.set(false);
+    
+    
+    
+    System.out.println(hatch.get());
+    
+    if(main.getTrigger()){
+     hatch.set(DoubleSolenoid.Value.kForward);
+     // hatch.set(DoubleSolenoid.Value.kOff);
+      System.out.println(hatch.get());
+    } 
+    else{
+      hatch.set(DoubleSolenoid.Value.kReverse);
     }
     
 
