@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 
 public class Robot extends TimedRobot {
     // Aurdino testing
+    int foo;
     String spread ="0";
     SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
  int number = 0;
@@ -95,15 +98,45 @@ double area = ta.getDouble(0.0);
 
   @Override
   public void teleopPeriodic() {
+    
+    myRobot.arcadeDrive(main.getY(), main.getX());
+    spread = sp.readString();
+   if(spread.length() > 1)
+   { 
+   spread=spread.substring(0, spread.length() - 2);
+ // String t1 = "";
+  
+  foo = Integer.parseInt(spread);
+ //System.out.println(spread +" "+ spread.length());
+   }
+System.out.println(foo);
+   //myRobot.stopMotor();
+ if(main.getTrigger() & foo > 28){
+     myRobot.arcadeDrive(-.55, 0);
+     System.out.println("active");
+   }
+   //myRobot.stopMotor();
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     //myRobot.setMaxOutput(.5);
     //myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0));
-    double v = tv.getDouble(0.0);
+    //double v = tv.getDouble(0.0);
 
     //if(v == 0){//if no target is in view
      //   left.set(.3);
         
      // }
-      if(true){//if target is in camra view
+      /*if(true){//if target is in camra view
         double xOffset = tx.getDouble(0.0);
         double yOffset = ty.getDouble(0.0);
         
@@ -122,7 +155,7 @@ double area = ta.getDouble(0.0);
         else{
           
           }
-        }
+        } */
       }
    
         
@@ -144,19 +177,27 @@ double area = ta.getDouble(0.0);
   @Override
   public void testPeriodic() {
     //System.out.println(sp.readString(100));
-    
+    int foo;
     
    // String test = (sp.readString(10));
     //System.out.println(test);
    // sp.flush();
-   String spread = sp.readString();
-  String t1 = "";
+   spread = sp.readString();
+   if(spread.length() > 1)
+   { 
+   spread=spread.substring(0, spread.length() - 2);
+ // String t1 = "";
   
-  int foo = 0;
+  foo = Integer.parseInt(spread);
+ System.out.println(spread +" "+ spread.length());
+   }
+ 
+
+
 //try {
-  spread = spread.trim();
-  System.out.println(spread + " " + spread.length());
-    foo = Integer.parseInt(spread);
+ // spread = spread.trim();
+  //System.out.println(spread + " " + spread.length());
+  //  foo = Integer.parseInt(spread);
  // } catch (NumberFormatException e) {
     
 //}
