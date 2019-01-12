@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Deep Space 2019                                                            */
+/* Deep Space 2019                                                                 */
 /* By:Andrew Levin                                                            */
 /* Team#5678                                                                  */
 /*                                                                            */
@@ -17,7 +17,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -27,7 +28,15 @@ import edu.wpi.first.wpilibj.SerialPort;
 
 
 public class Robot extends TimedRobot {
-    // Aurdino testing
+
+  
+  //pnumatics
+  Compressor cmain = new Compressor(0);
+  DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
+  boolean hatchState = false;
+  
+  
+  // Aurdino testing
     int foo;
     String spread ="0";
     SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
