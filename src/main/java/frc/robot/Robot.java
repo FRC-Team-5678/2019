@@ -6,7 +6,9 @@
 /*----------------------------------------------------------------------------*/
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -21,7 +23,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class Robot extends TimedRobot {
 
 
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
+  Compressor cmain = new Compressor(0);
+  Solenoid hatch = new Solenoid(0);
+
+ /* NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 NetworkTableEntry tx = table.getEntry("tx");
 NetworkTableEntry ty = table.getEntry("ty");
 NetworkTableEntry ta = table.getEntry("ta");
@@ -34,7 +40,7 @@ NetworkTableEntry tv = table.getEntry("tv");
 double v = tv.getDouble(0.0);
 double x = tx.getDouble(0.0);
 double y = ty.getDouble(0.0);
-double area = ta.getDouble(0.0);
+double area = ta.getDouble(0.0);*/
 
 //post to smart dashboard periodically
 //SmartDashboard.putNumber("LimelightX", x);
@@ -56,7 +62,7 @@ double area = ta.getDouble(0.0);
  
   @Override
   public void robotInit() {
-    table.getEntry("camMode").setNumber(1);
+    //table.getEntry("camMode").setNumber(1);
    
   }
 
@@ -70,14 +76,31 @@ double area = ta.getDouble(0.0);
 
   @Override
   public void teleopInit() {
+   myRobot.setSafetyEnabled(false);
    
   }
 
   @Override
   public void teleopPeriodic() {
-    double v = tv.getDouble(0.0);
+    //double v = tv.getDouble(0.0);
+    cmain.setClosedLoopControl(true);
 
-      if(v == 0){//if no target is in view
+    hatch.set(false);
+    
+    if(main.getTriggerPressed()){
+      hatch.set(true);
+    }
+    else if(main.getTriggerReleased()){
+      hatch.set(false);
+    }
+    
+
+    
+    
+    
+    
+    
+    /* if(v == 0){//if no target is in view
         left.set(.3);
         
       }
@@ -103,7 +126,7 @@ double area = ta.getDouble(0.0);
           }
         }
       }
-   
+   */
    
    
     /*if(main.getTrigger()){
