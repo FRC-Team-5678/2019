@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Deep Space 2019                                                                 */
+/* Deep Space 2019                                                            */
 /* By:Andrew Levin                                                            */
 /* Team#5678                                                                  */
 /*                                                                            */
@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 
 
 public class Robot extends TimedRobot {
-
+ 
   
   //pnumatics
   Compressor cmain = new Compressor(0);
@@ -41,12 +41,7 @@ public class Robot extends TimedRobot {
     String spread ="0";
     SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
  int number = 0;
-  //factor to convert to inches
-  private static final double ultraToinch = 41.8175;
-
-  //speed constant for encoder moving forword
-  private static final double ultraSpeed = .05;
-
+  
   //ultra sonic input
  //AnalogInput ultraSonic = new AnalogInput(0);
  //Ultrasonic us = new Ultrasonic(1,0);
@@ -78,13 +73,17 @@ double area = ta.getDouble(0.0);
   
   //drive setup
   DifferentialDrive myRobot = new DifferentialDrive(left,right);
- 
-  
- // Joystick setup
+// Joystick setup
   Joystick main = new Joystick(0);
   double speedX = main.getRawAxis(0);  //change to whats needed
   double rotatZ = main.getRawAxis(1);  //change to whats needed
   
+  
+   
+
+ 
+  
+ 
  
   public void robotInit() {
     sp.enableTermination();
@@ -108,37 +107,50 @@ double area = ta.getDouble(0.0);
   @Override
   public void teleopPeriodic() {
     
-    myRobot.arcadeDrive(main.getY(), main.getX());
+  
+   
+
+  myRobot.arcadeDrive(main.getY(), main.getX());
+   
+
+
+
+
+
+   
+   //Reading from serial
     spread = sp.readString();
-   if(spread.length() > 1)
+   
+   //if serial has given a number larger then 1 parse it into a int
+    if(spread.length() > 1)
    { 
    spread=spread.substring(0, spread.length() - 2);
- // String t1 = "";
-  
   foo = Integer.parseInt(spread);
- //System.out.println(spread +" "+ spread.length());
    }
-System.out.println(foo);
-   //myRobot.stopMotor();
+
+
+
+ //if farther the 28 inches from target move forword   
  if(main.getTrigger() & foo > 28){
      myRobot.arcadeDrive(-.55, 0);
      System.out.println("active");
    }
    //myRobot.stopMotor();
-   if(main.getTriggerPressed()){
-    if(hatchState == false){
+   if(main.getTriggerPressed()){//is trigger been presses
+    if(hatchState == false){//is the solinoid alredy extended if not extend 
        hatch.set(DoubleSolenoid.Value.kReverse);
      hatchState = true;
      System.out.println("true");
      //hatch.set(DoubleSolenoid.Value.kOff);
      //System.out.println(hatch.get());
    }
-   else{
+   else{//return to normal
      hatch.set(DoubleSolenoid.Value.kForward);
      hatchState = false;
    }
      
-   } 
+  }
+}
     
     
     
@@ -179,7 +191,7 @@ System.out.println(foo);
           
           }
         } */
-      }
+      
    
         
    
