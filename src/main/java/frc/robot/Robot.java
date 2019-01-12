@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.networktables.NetworkTable;
@@ -27,7 +28,7 @@ public class Robot extends TimedRobot {
 
   Compressor cmain = new Compressor(0);
   DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
-
+  boolean hatchState = false;
  
 
  /* NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -65,6 +66,7 @@ double area = ta.getDouble(0.0);*/
  
   @Override
   public void robotInit() {
+   
     //table.getEntry("camMode").setNumber(1);
    
   }
@@ -86,21 +88,35 @@ double area = ta.getDouble(0.0);*/
   @Override
   public void teleopPeriodic() {
     //double v = tv.getDouble(0.0);
-    //hatch.set(DoubleSolenoid.Value.kOff);
+    //hatch.set(DoubleSolenoid.Vxalue.kOff);
     
     
     
     
-    System.out.println(hatch.get());
     
-    if(main.getTrigger()){
-     hatch.set(DoubleSolenoid.Value.kForward);
-     // hatch.set(DoubleSolenoid.Value.kOff);
-      System.out.println(hatch.get());
-    } 
-    else{
-      hatch.set(DoubleSolenoid.Value.kReverse);
+    //System.out.println(hatch.get());
+    System.out.println(hatchState);
+    if(main.getTriggerPressed()){
+     if(hatchState == false){
+        hatch.set(DoubleSolenoid.Value.kReverse);
+      hatchState = true;
+      System.out.println("true");
+      //hatch.set(DoubleSolenoid.Value.kOff);
+      //System.out.println(hatch.get());
     }
+    else{
+      hatch.set(DoubleSolenoid.Value.kForward);
+      hatchState = false;
+    }
+      
+    } 
+  // else  if(main.getTriggerPressed() & hatchState == true){
+    //  hatch.set(DoubleSolenoid.Value.kForward);
+      //hatchState = false;
+      //hatch.set(DoubleSolenoid.Value.kOff);
+      //System.out.println(hatch.get());
+    
+    //} 
     
 
     
