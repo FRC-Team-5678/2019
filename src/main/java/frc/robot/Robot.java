@@ -7,19 +7,18 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Ultrasonic;
+//import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
-import edu.wpi.first.wpilibj.AnalogInput;
+//import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+//import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -40,7 +39,7 @@ public class Robot extends TimedRobot {
     int foo;
     String spread ="0";
     SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
- int number = 0;
+    int number = 0;
   
   //ultra sonic input
  //AnalogInput ultraSonic = new AnalogInput(0);
@@ -113,10 +112,6 @@ double area = ta.getDouble(0.0);
   myRobot.arcadeDrive(main.getY(), main.getX());
    
 
-
-
-
-
    
    //Reading from serial
     spread = sp.readString();
@@ -167,11 +162,8 @@ double area = ta.getDouble(0.0);
     //myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0));
     //double v = tv.getDouble(0.0);
 
-    //if(v == 0){//if no target is in view
-     //   left.set(.3);
-        
-     // }
-      /*if(true){//if target is in camra view
+  
+      /*if(main.getTrigger()){//if target is in camra view
         double xOffset = tx.getDouble(0.0);
         double yOffset = ty.getDouble(0.0);
         
