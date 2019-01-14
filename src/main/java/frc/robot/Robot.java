@@ -30,9 +30,9 @@ public class Robot extends TimedRobot {
  
   
   //pnumatics
-  Compressor cmain = new Compressor(0);
-  DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
-  boolean hatchState = false;
+ // Compressor cmain = new Compressor(0);
+  //DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
+  //boolean hatchState = false;
   
   
   // Aurdino testing
@@ -122,11 +122,40 @@ double area = ta.getDouble(0.0);
    spread=spread.substring(0, spread.length() - 2);
   foo = Integer.parseInt(spread);
    }
+   double v = tv.getDouble(0.0);
+
+  
+   if(main.getTrigger()){//if trigger is pressed
+     double xOffset = tx.getDouble(0.0);
+     double yOffset = ty.getDouble(0.0);
+     
+     if(Math.abs(xOffset)>6){//if the target is far away from center
+       System.out.println("0.02");
+       System.out.println(0.02 * xOffset);
+       left.set(0.03 * xOffset);
+       right.set(0.03* xOffset);
+     }
+     else if(Math.abs(xOffset)>3){//if target is close to center
+       System.out.println("0.05");
+       System.out.println(0.15 * xOffset);
+       left.set(0.07 * xOffset);
+       right.set(0.07 * xOffset);
+     }
+     else{
+       if(foo > 28){
+        myRobot.arcadeDrive(-.55, 0);
+        System.out.println("active");
+       }
+       
+       }
+     } 
+
+
 
 
 
  //if farther the 28 inches from target move forword   
- if(main.getTrigger() & foo > 28){
+ /*if(main.getTrigger() & foo > 28){
      myRobot.arcadeDrive(-.55, 0);
      System.out.println("active");
    }
@@ -144,46 +173,17 @@ double area = ta.getDouble(0.0);
      hatchState = false;
    }
      
-  }
+   }*/
 }
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
     
     //myRobot.setMaxOutput(.5);
     //myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0));
-    //double v = tv.getDouble(0.0);
-
-  
-      /*if(main.getTrigger()){//if target is in camra view
-        double xOffset = tx.getDouble(0.0);
-        double yOffset = ty.getDouble(0.0);
-        
-        if(Math.abs(xOffset)>6){//if the target is far away from center
-          System.out.println("0.02");
-          System.out.println(0.02 * xOffset);
-          left.set(0.03 * xOffset);
-          right.set(0.03* xOffset);
-        }
-        else if(Math.abs(xOffset)>3){//if target is close to center
-          System.out.println("0.05");
-          System.out.println(0.15 * xOffset);
-          left.set(0.07 * xOffset);
-          right.set(0.07 * xOffset);
-        }
-        else{
-          
-          }
-        } */
+   
       
+    
    
         
    
