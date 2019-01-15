@@ -8,7 +8,6 @@
 package frc.robot;
 
 //import edu.wpi.first.wpilibj.Ultrasonic;
-import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 //import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Notifier;
@@ -111,8 +110,20 @@ double area = ta.getDouble(0.0);
 
   myRobot.arcadeDrive(main.getY(), main.getX());
    
+    if(main.getRawButtonPressed(3)){ //sets speed
+      myRobot.setMaxOutput(1);
+    }
+    else if(main.getRawButtonPressed(5)){
+      myRobot.setMaxOutput(.75);
+    }
+    else if(main.getRawButtonPressed(2)){
+      myRobot.setMaxOutput(.5);
+    }
+    else if(main.getRawButtonPressed(4)){
+      myRobot.setMaxOutput(.25);
+    }
 
-   
+
    //Reading from serial
     spread = sp.readString();
    
@@ -142,7 +153,7 @@ double area = ta.getDouble(0.0);
        right.set(0.07 * xOffset);
      }
      else{
-       if(foo > 28){
+       if(Math.abs(xOffset) <=3 & foo > 28){
         myRobot.arcadeDrive(-.55, 0);
         System.out.println("active");
        }
