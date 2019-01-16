@@ -95,6 +95,39 @@ double area = ta.getDouble(0.0);
 
   @Override
   public void autonomousPeriodic() {
+    //Reading from serial
+    spread = sp.readString();
+   
+   //if serial has given a number larger then 1 parse it into a int
+    if(spread.length() > 1)
+   { 
+   spread=spread.substring(0, spread.length() - 2);
+  foo = Integer.parseInt(spread);
+   }
+   double v = tv.getDouble(0.0);
+
+    double xOffset = tx.getDouble(0.0);
+     double yOffset = ty.getDouble(0.0);
+     
+     if(Math.abs(xOffset)>6){//if the target is far away from center
+       System.out.println("0.02");
+       System.out.println(0.02 * xOffset);
+       left.set(0.03 * xOffset);
+       right.set(0.03* xOffset);
+     }
+     else if(Math.abs(xOffset)>3){//if target is close to center
+       System.out.println("0.05");
+       System.out.println(0.15 * xOffset);
+       left.set(0.07 * xOffset);
+       right.set(0.07 * xOffset);
+     }
+     else{
+       if(Math.abs(xOffset) <=3 & foo > 28){
+        myRobot.arcadeDrive(-.55, 0);
+        System.out.println("active");
+       }
+       
+       }
   }
 
   @Override
