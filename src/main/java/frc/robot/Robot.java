@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 //import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+
+import javax.swing.border.MatteBorder;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -29,7 +32,7 @@ public class Robot extends TimedRobot {
  
   
   //pnumatics
- // Compressor cmain = new Compressor(0);
+  //Compressor cmain = new Compressor(0);
   //DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
   //boolean hatchState = false;
   
@@ -37,7 +40,7 @@ public class Robot extends TimedRobot {
   // Aurdino testing
     int foo;
     String spread ="0";
-    SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
+    //SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
     int number = 0;
   
   //ultra sonic input
@@ -68,6 +71,8 @@ double area = ta.getDouble(0.0);
   //motor setup
   Spark left = new Spark(0);
   Spark right = new Spark(1);
+  Spark Intake = new Spark(3);
+  
   
   //drive setup
   DifferentialDrive myRobot = new DifferentialDrive(left,right);
@@ -84,8 +89,8 @@ double area = ta.getDouble(0.0);
  
  
   public void robotInit() {
-    sp.enableTermination();
-    sp.setTimeout(.02);
+    //sp.enableTermination();
+    //sp.setTimeout(.02);
 
   }
 
@@ -96,7 +101,7 @@ double area = ta.getDouble(0.0);
   @Override
   public void autonomousPeriodic() {
     //Reading from serial
-    spread = sp.readString();
+    //spread = sp.readString();
    
    //if serial has given a number larger then 1 parse it into a int
     if(spread.length() > 1)
@@ -104,20 +109,21 @@ double area = ta.getDouble(0.0);
    spread=spread.substring(0, spread.length() - 2);
   foo = Integer.parseInt(spread);
    }
+   System.out.println(foo);
    double v = tv.getDouble(0.0);
 
     double xOffset = tx.getDouble(0.0);
      double yOffset = ty.getDouble(0.0);
      
      if(Math.abs(xOffset)>6){//if the target is far away from center
-       System.out.println("0.02");
-       System.out.println(0.02 * xOffset);
+       //System.out.println("0.02");
+       //System.out.println(0.02 * xOffset);
        left.set(0.03 * xOffset);
        right.set(0.03* xOffset);
      }
      else if(Math.abs(xOffset)>3){//if target is close to center
-       System.out.println("0.05");
-       System.out.println(0.15 * xOffset);
+       //System.out.println("0.05");
+       //System.out.println(0.15 * xOffset);
        left.set(0.07 * xOffset);
        right.set(0.07 * xOffset);
      }
@@ -126,7 +132,9 @@ double area = ta.getDouble(0.0);
         myRobot.arcadeDrive(-.55, 0);
         System.out.println("active");
        }
-       
+       if(Math.abs(xOffset) <= 3 & foo <28){
+         myRobot.stopMotor();
+       }
        }
   }
 
@@ -138,10 +146,13 @@ double area = ta.getDouble(0.0);
   @Override
   public void teleopPeriodic() {
     
-  
+     //cmain.start();
    
+    //NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipepine>").setNumber(1);
+    //System.out.println(NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getNumber(1));
 
   myRobot.arcadeDrive(main.getY(), main.getX());
+  
    
     if(main.getRawButtonPressed(3)){ //sets speed
       myRobot.setMaxOutput(1);
@@ -155,10 +166,14 @@ double area = ta.getDouble(0.0);
     else if(main.getRawButtonPressed(4)){
       myRobot.setMaxOutput(.25);
     }
+    else if(main.getRawButtonPressed(9)){
+      myRobot.setMaxOutput(10); //super sensitive
+    }
 
 
    //Reading from serial
-    spread = sp.readString();
+    //spread = sp.readString();
+    
    
    //if serial has given a number larger then 1 parse it into a int
     if(spread.length() > 1)
@@ -167,33 +182,66 @@ double area = ta.getDouble(0.0);
   foo = Integer.parseInt(spread);
    }
    double v = tv.getDouble(0.0);
-
+   //System.out.println(foo);
   
    if(main.getTrigger()){//if trigger is pressed
      double xOffset = tx.getDouble(0.0);
      double yOffset = ty.getDouble(0.0);
-     
+     System.out.println(xOffset);
      if(Math.abs(xOffset)>6){//if the target is far away from center
-       System.out.println("0.02");
-       System.out.println(0.02 * xOffset);
+       //System.out.println("0.02");
+       //System.out.println(0.02 * xOffset);
        left.set(0.03 * xOffset);
        right.set(0.03* xOffset);
      }
      else if(Math.abs(xOffset)>3){//if target is close to center
-       System.out.println("0.05");
-       System.out.println(0.15 * xOffset);
+       //System.out.println("0.05");
+       //System.out.println(0.15 * xOffset);
        left.set(0.07 * xOffset);
        right.set(0.07 * xOffset);
      }
-     else{
-       if(Math.abs(xOffset) <=3 & foo > 28){
-        myRobot.arcadeDrive(-.55, 0);
-        System.out.println("active");
-       }
-       
-       }
-     } 
 
+     //else{
+       //if(Math.abs(xOffset) <=3 & foo > 28){
+        //myRobot.arcadeDrive(-.55, 0);
+        //System.out.println("active");
+       //}
+       
+      // }
+      
+    }
+
+    if(main.getRawButton(6)){//intake and shoter mechinisem power.
+      Intake.set(.5);
+    }
+    else if(main.getRawButtonReleased(6)){
+      Intake.stopMotor();
+    }
+    if(main.getRawButton(7)){
+      Intake.set(-.3);
+    }
+    else if(main.getRawButtonReleased(7)){
+      Intake.stopMotor();
+    }
+    
+
+
+
+
+   /* if(main.getRawButtonPressed(11)){//is trigger been presses
+      if(hatchState == false){//is the solinoid alredy extended if not extend 
+         hatch.set(DoubleSolenoid.Value.kReverse);
+       hatchState = true;
+       System.out.println("true");
+       //hatch.set(DoubleSolenoid.Value.kOff);
+       //System.out.println(hatch.get());
+     }
+     else{//return to normal
+       hatch.set(DoubleSolenoid.Value.kForward);
+       hatchState = false;
+     }
+   } 
+   */
 
 
 
@@ -204,18 +252,7 @@ double area = ta.getDouble(0.0);
      System.out.println("active");
    }
    //myRobot.stopMotor();
-   if(main.getTriggerPressed()){//is trigger been presses
-    if(hatchState == false){//is the solinoid alredy extended if not extend 
-       hatch.set(DoubleSolenoid.Value.kReverse);
-     hatchState = true;
-     System.out.println("true");
-     //hatch.set(DoubleSolenoid.Value.kOff);
-     //System.out.println(hatch.get());
-   }
-   else{//return to normal
-     hatch.set(DoubleSolenoid.Value.kForward);
-     hatchState = false;
-   }
+   
      
    }*/
 }
@@ -253,7 +290,7 @@ double area = ta.getDouble(0.0);
    // String test = (sp.readString(10));
     //System.out.println(test);
    // sp.flush();
-   spread = sp.readString();
+   //spread = sp.readString();
    if(spread.length() > 1)
    { 
    spread=spread.substring(0, spread.length() - 2);
