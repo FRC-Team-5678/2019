@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 //import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -68,8 +69,10 @@ double area = ta.getDouble(0.0);
   int armtrigger = 10;
   int armState = 0;
   double armSpeed = .4;
-  double fullin = 1.3;
-  double halfi = .26;
+  int ArmTrans = 0;
+  DigitalInput lsArmOpen, lsArmClose;
+  int lsArmOpenp = 0;
+  int lsArmClosep = 1;
   
   //drive setup
   DifferentialDrive myRobot = new DifferentialDrive(left,right);
@@ -88,7 +91,8 @@ double area = ta.getDouble(0.0);
  
  
   public void robotInit() {
-   
+   DigitalInput lsArmOpen = new DigitalInput(lsArmOpenp);
+   DigitalInput lsArmClose = new DigitalInput(lsArmClosep);
 
   }
 
@@ -185,23 +189,31 @@ double area = ta.getDouble(0.0);
       Intake.stopMotor();
     }
 
-    if(main.getRawButton(armtrigger)){
+    if(main.getRawButtonPressed(armtrigger) & ArmTrans == 0){
+      ArmTrans = 1;
+    }
+ 
+    if(ArmTrans == 1){
       if(armState == 0){
-      Arm.set(-armSpeed);
-      Timer.delay(fullin);
-      armState = 1;
+        Arm.set(armSpeed);
+        if(lsArmOpen.get()){
+          ArmTrans = 0;
+          armState = 1;
+          Arm.stopMotor();
+        }
       }
-   
-      else if(armState == 1){
-      Arm.set(armSpeed);
-      Timer.delay(fullin);
-      armState = 0;
-      ///System.out.println("active");
+      else{
+        Arm.set(-armSpeed);
+        if(lsArmClose.get()){
+          ArmTrans = 0;
+          armState = 0;
+          Arm.stopMotor();
+        }      
+      }
+
+
     }
-  }
-    else if(main.getRawButtonReleased(armtrigger)){
-      Arm.stopMotor();
-    }
+    
     if(main.getRawButton(11)){
       Arm.set(armSpeed);
     }
