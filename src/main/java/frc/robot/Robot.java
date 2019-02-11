@@ -9,29 +9,39 @@ package frc.robot;
 
 //import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Notifier;//not used
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Timer;//not used
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 //import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Compressor;//not used
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;//not used
+import org.opencv.ml.NormalBayesClassifier;//not used
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SerialPort;//not used
 
 public class Robot extends TimedRobot {
 
   // pnumatics
+<<<<<<< HEAD
   int hatchTrigger = 4;
   Compressor cmain = new Compressor(0);
   DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
   boolean hatchState = false;
 
   // Arduino testing
+=======
+  // int hatchTrigger = 4;
+  // Compressor cmain = new Compressor(0);
+  // DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
+  // boolean hatchState = false;
+
+  // Aurdino testing
+>>>>>>> 25c26e9fcc7373a669f7ec47c84f07a7dd3e03cf
   int foo;
   String spread = "0";
   double lidar = 0;
@@ -61,6 +71,7 @@ public class Robot extends TimedRobot {
   int armState = 0;
   double armSpeed = .4;
   int ArmTrans = 0;
+<<<<<<< HEAD
   DigitalInput lsArmOpen = new DigitalInput(4);
   DigitalInput lsArmClose = new DigitalInput(5);;
   int lsArmOpenp = 1;
@@ -77,6 +88,51 @@ public class Robot extends TimedRobot {
 
   public void robotInit() {
 
+=======
+  DigitalInput lsArmOpen, lsArmClose;
+  int lsArmOpenp = 0;
+  int lsArmClosep = 1;
+
+  // drive setup
+  DifferentialDrive myRobot = new DifferentialDrive(left, right);
+  boolean regular = true;
+  boolean reversed = false;
+  boolean drivedirection = regular; 
+  // Joystick setup
+  /*Button Assignment
+    1
+    2 - myRobot.setMaxOutput(.5);
+    3 - myRobot.setMaxOutput(1);
+    4 - myRobot.setMaxOutput(.25); (commented out)
+    5 - myRobot.setMaxOutput(.75);
+    6 - intakeButton
+    7 - intakerev
+    8 - arm retract 
+    9
+    10
+    11 - arm extend
+    trigger - double xOffset = tx.getDouble(0.0);
+    */
+  Joystick main = new Joystick(0);
+  double speedX = main.getRawAxis(0); // change to whats needed
+  double rotatZ = main.getRawAxis(1); // change to whats needed
+  
+  int speedhalf = 2;
+  int speedfull = 3;
+  //int speed1quarter = 4;
+  int speed3quarter = 5;
+  int intakeButton = 6; // the button number for intake
+  int intakerev = 7; // the button number for intake rev
+  int armretract = 8;
+  int driveregular = 9;
+  int drivereversed = 10;
+  int armextend = 11;
+  
+
+  public void robotInit() {
+    DigitalInput lsArmOpen = new DigitalInput(lsArmOpenp);//not used
+    DigitalInput lsArmClose = new DigitalInput(lsArmClosep);//not used
+>>>>>>> 25c26e9fcc7373a669f7ec47c84f07a7dd3e03cf
   }
 
   @Override
@@ -90,17 +146,39 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 25c26e9fcc7373a669f7ec47c84f07a7dd3e03cf
   }
 
   @Override
   public void teleopPeriodic() {
+<<<<<<< HEAD
 
     System.out.println(lsArmClose.get());
     cmain.start();
+=======
+    /*Button Assignment
+      1
+      2 - myRobot.setMaxOutput(.5);
+      3 - myRobot.setMaxOutput(1);
+      4 - myRobot.setMaxOutput(.25); (commented out)
+      5 - myRobot.setMaxOutput(.75);
+      6
+      7
+      8
+      9
+      10
+      trigger - double xOffset = tx.getDouble(0.0);
+    */
+    // cmain.start();
+>>>>>>> 25c26e9fcc7373a669f7ec47c84f07a7dd3e03cf
 
     // NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipepine>").setNumber(1);
     // System.out.println(NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getNumber(1));
 
+<<<<<<< HEAD
     myRobot.arcadeDrive(main.getY(), main.getX());
 
     if (main.getRawButtonPressed(3)) { // sets speed
@@ -119,6 +197,102 @@ public class Robot extends TimedRobot {
       // if serial has given a number larger then 1 parse it into a int
       if (spread.length() > 1) {
         foo = Integer.parseInt(spread);
+=======
+    //Drive direction
+    if(drivedirection == regular){myRobot.arcadeDrive(main.getY(), main.getX());} //sets drive to regular
+    else if(drivedirection == reversed){myRobot.arcadeDrive(-main.getY(), -main.getX());} //sets drive to reversed
+    else{myRobot.arcadeDrive(main.getY(), main.getX());} //defaults to regular drive
+    
+    //Drive Direction Selection
+    if(main.getRawButtonPressed(driveregular)){drivedirection=regular;}
+    else if(main.getRawButtonPressed(drivereversed)){drivedirection=reversed;}
+
+    //main.getRawButtonPressed();
+
+    
+
+
+    if (main.getRawButtonPressed(speedfull)) { // sets speed
+      myRobot.setMaxOutput(1);
+    } else if (main.getRawButtonPressed(speed3quarter)) {
+      myRobot.setMaxOutput(.75);
+    } else if (main.getRawButtonPressed(speedhalf)) {
+      myRobot.setMaxOutput(.5);
+    }
+    // else if(main.getRawButtonPressed(4)){
+    // myRobot.setMaxOutput(.25);
+    // }
+
+    // Reading from serial
+    // spread = sp.readString();
+
+    // if serial has given a number larger then 1 parse it into a int
+    if (spread.length() > 1) {
+      spread = spread.substring(0, spread.length() - 2);
+      foo = Integer.parseInt(spread);
+    }
+    lidar = foo / 25.4;
+    double v = tv.getDouble(0.0);//not used
+    // System.out.println(foo);
+
+    if (main.getTrigger()) {// if trigger is pressed
+      double xOffset = tx.getDouble(0.0);
+
+      System.out.println(xOffset);
+      if (Math.abs(xOffset) > 6) {// if the target is far away from center
+        // System.out.println("0.02");
+        // System.out.println(0.02 * xOffset);
+        left.set(0.03 * xOffset);
+        right.set(0.03 * xOffset);
+      } else if (Math.abs(xOffset) > 3) {// if target is close to center
+        // System.out.println("0.05");
+        // System.out.println(0.15 * xOffset);
+        left.set(0.07 * xOffset);
+        right.set(0.07 * xOffset);
+      }
+
+      // else{
+      // if(Math.abs(xOffset) <=3 & foo > 28){
+      // myRobot.arcadeDrive(-.55, 0);
+      // System.out.println("active");
+      // }
+
+      // }
+
+    }
+    // System.out.println(armState);
+
+    if (main.getRawButton(intakeButton)) {// intake and shoter mechinisem power.
+      Intake.set(.6);
+    } else if (main.getRawButtonReleased(intakeButton)) {
+      Intake.stopMotor();
+    }
+    if (main.getRawButton(intakerev)) {
+      Intake.set(-.3);
+    } else if (main.getRawButtonReleased(intakerev)) {
+      Intake.stopMotor();
+    }
+
+    if (main.getRawButtonPressed(armtrigger) & ArmTrans == 0) {
+      ArmTrans = 1;
+    }
+
+    if (ArmTrans == 1) {
+      if (armState == 0) {
+        Arm.set(armSpeed);
+        if (lsArmOpen.get()) {
+          ArmTrans = 0;
+          armState = 1;
+          Arm.stopMotor();
+        }
+      } else {
+        Arm.set(-armSpeed);
+        if (lsArmClose.get()) {
+          ArmTrans = 0;
+          armState = 0;
+          Arm.stopMotor();
+        }
+>>>>>>> 25c26e9fcc7373a669f7ec47c84f07a7dd3e03cf
       }
       lidar = foo / 25.4;
 
@@ -141,6 +315,7 @@ public class Robot extends TimedRobot {
           right.set(0.07 * xOffset);
         }
 
+<<<<<<< HEAD
         // else{
         // if(Math.abs(xOffset) <=3 & foo > 28){
         // myRobot.arcadeDrive(-.55, 0);
@@ -220,6 +395,48 @@ public class Robot extends TimedRobot {
    * xOffset); right.set(.3* xOffset); }
    */
 
+=======
+    }
+
+    if (main.getRawButton(armextend)) {
+      Arm.set(armSpeed);
+    } else if (main.getRawButtonReleased(11)) {
+      Arm.stopMotor();
+    }
+    if (main.getRawButton(armretract)) {
+      Arm.set(-armSpeed);
+    } else if (main.getRawButtonReleased(8)) {
+      Arm.stopMotor();
+    }
+
+    /*
+      if(main.getRawButtonPressed(hatchTrigger)){//is trigger been presses
+      if(hatchState == false){//is the solinoid alredy extended if not extend
+      hatch.set(DoubleSolenoid.Value.kReverse); hatchState = true;
+      System.out.println("true"); //hatch.set(DoubleSolenoid.Value.kOff);
+      //System.out.println(hatch.get()); } else{//return to normal
+      hatch.set(DoubleSolenoid.Value.kForward); hatchState = false; } }
+     */
+
+    // if farther the 28 inches from target move forword
+    /*
+     * if(main.getTrigger() & foo > 28){ myRobot.arcadeDrive(-.55, 0);
+     * System.out.println("active"); } //myRobot.stopMotor();
+     * 
+     * 
+     * }
+     */
+  }
+
+  // myRobot.setMaxOutput(.5);
+  // myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0));
+
+  /*
+   * if(main.getTrigger()){ double xOffset = tx.getDouble(0.0); left.set(.3 *
+   * xOffset); right.set(.3* xOffset); }
+   */
+
+>>>>>>> 25c26e9fcc7373a669f7ec47c84f07a7dd3e03cf
   @Override
   public void testInit() {
 
@@ -227,13 +444,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 25c26e9fcc7373a669f7ec47c84f07a7dd3e03cf
     // System.out.println(sp.readString(100));
 
     // String test = (sp.readString(10));
     // System.out.println(test);
     // sp.flush();
     // spread = sp.readString();
+<<<<<<< HEAD
     /*
      * if(spread.length() > 1) { spread=spread.substring(0, spread.length() - 2); //
      * String t1 = "";
@@ -241,6 +462,15 @@ public class Robot extends TimedRobot {
      * foo = Integer.parseInt(spread); System.out.println(spread +" "+
      * spread.length()); }
      */
+=======
+    if (spread.length() > 1) {
+      spread = spread.substring(0, spread.length() - 2);
+      // String t1 = "";
+
+      foo = Integer.parseInt(spread);
+      System.out.println(spread + " " + spread.length());
+    }
+>>>>>>> 25c26e9fcc7373a669f7ec47c84f07a7dd3e03cf
 
     // try {
     // spread = spread.trim();
