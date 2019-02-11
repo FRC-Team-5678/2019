@@ -23,76 +23,59 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SerialPort;
 
-
-
 public class Robot extends TimedRobot {
- 
-  
-  //pnumatics
-  //int hatchTrigger = 4;
-  //Compressor cmain = new Compressor(0);
-  //DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
-  //boolean hatchState = false;
-  
-  
-  // Aurdino testing
-    int foo;
-    String spread ="0";
-    double lidar =0;
-    //SerialPort sp = new SerialPort(115200, SerialPort.Port.kUSB1);
-    int number = 0;
- 
+
+  // pnumatics
+  int hatchTrigger = 4;
+  Compressor cmain = new Compressor(0);
+  DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
+  boolean hatchState = false;
+
+  // Arduino testing
+  int foo;
+  String spread = "0";
+  double lidar = 0;
+  // SerialPort sp = new SerialPort(115200, SerialPort.Port.kUSB1);
+  int number = 0;
 
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-NetworkTableEntry tx = table.getEntry("tx");
-NetworkTableEntry ty = table.getEntry("ty");
-NetworkTableEntry ta = table.getEntry("ta");
-NetworkTableEntry tv = table.getEntry("tv");
+  NetworkTableEntry tx = table.getEntry("tx");
+  NetworkTableEntry ty = table.getEntry("ty");
+  NetworkTableEntry ta = table.getEntry("ta");
+  NetworkTableEntry tv = table.getEntry("tv");
 
+  // read values periodically
+  double v = tv.getDouble(0.0);
+  double x = tx.getDouble(0.0);
+  double y = ty.getDouble(0.0);
+  double area = ta.getDouble(0.0);
 
-
-
-//read values periodically
-double v = tv.getDouble(0.0);
-double x = tx.getDouble(0.0);
-double y = ty.getDouble(0.0);
-double area = ta.getDouble(0.0);
-
-
-  //motor setup
+  // motor setup
   Spark left = new Spark(0);
   Spark right = new Spark(1);
   Spark Intake = new Spark(2);
   Spark Arm = new Spark(3);
-  
-  //hatch veriables
+
+  // hatch veriables
   int armtrigger = 10;
   int armState = 0;
   double armSpeed = .4;
   int ArmTrans = 0;
-  DigitalInput lsArmOpen, lsArmClose;
-  int lsArmOpenp = 0;
-  int lsArmClosep = 1;
-  
-  //drive setup
-  DifferentialDrive myRobot = new DifferentialDrive(left,right);
-// Joystick setup
-  Joystick main = new Joystick(0);
-  double speedX = main.getRawAxis(0);  //change to whats needed
-  double rotatZ = main.getRawAxis(1);  //change to whats needed
-  int intakeButton = 6; //the button number for intake
-  int intakerev = 7;   // the button number for intake rev
-  
-  
-   
+  DigitalInput lsArmOpen = new DigitalInput(4);
+  DigitalInput lsArmClose = new DigitalInput(5);;
+  int lsArmOpenp = 1;
+  int lsArmClosep = 0;
 
- 
-  
- 
- 
+  // drive setup
+  DifferentialDrive myRobot = new DifferentialDrive(left, right);
+  // Joystick setup
+  Joystick main = new Joystick(0);
+  double speedX = main.getRawAxis(0); // change to whats needed
+  double rotatZ = main.getRawAxis(1); // change to whats needed
+  int intakeButton = 6; // the button number for intake
+  int intakerev = 7; // the button number for intake rev
+
   public void robotInit() {
-   DigitalInput lsArmOpen = new DigitalInput(lsArmOpenp);
-   DigitalInput lsArmClose = new DigitalInput(lsArmClosep);
 
   }
 
@@ -102,238 +85,191 @@ double area = ta.getDouble(0.0);
 
   @Override
   public void autonomousPeriodic() {
-    
+
   }
 
   @Override
   public void teleopInit() {
-   
   }
 
   @Override
   public void teleopPeriodic() {
-    
-     //cmain.start();
-   
-    //NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipepine>").setNumber(1);
-    //System.out.println(NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getNumber(1));
 
-  myRobot.arcadeDrive(main.getY(), main.getX());
-  
-   
-    if(main.getRawButtonPressed(3)){ //sets speed
+    System.out.println(lsArmClose.get());
+    cmain.start();
+
+    // NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipepine>").setNumber(1);
+    // System.out.println(NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getNumber(1));
+
+    myRobot.arcadeDrive(main.getY(), main.getX());
+
+    if (main.getRawButtonPressed(3)) { // sets speed
       myRobot.setMaxOutput(1);
-    }
-    else if(main.getRawButtonPressed(5)){
+    } else if (main.getRawButtonPressed(5)) {
       myRobot.setMaxOutput(.75);
-    }
-    else if(main.getRawButtonPressed(2)){
+    } else if (main.getRawButtonPressed(2)) {
       myRobot.setMaxOutput(.5);
-    }
-   // else if(main.getRawButtonPressed(4)){
-    //  myRobot.setMaxOutput(.25);
-  //  }
-    
-   //Reading from serial
-    //spread = sp.readString();
-    
-   
-   //if serial has given a number larger then 1 parse it into a int
-    if(spread.length() > 1)
-   { 
-   spread=spread.substring(0, spread.length() - 2);
-  foo = Integer.parseInt(spread);
-   }
-   lidar = foo / 25.4;
-   double v = tv.getDouble(0.0);
-   //System.out.println(foo);
-  
-   if(main.getTrigger()){//if trigger is pressed
-     double xOffset = tx.getDouble(0.0);
-
-     System.out.println(xOffset);
-     if(Math.abs(xOffset)>6){//if the target is far away from center
-       //System.out.println("0.02");
-       //System.out.println(0.02 * xOffset);
-       left.set(0.03 * xOffset);
-       right.set(0.03* xOffset);
-     }
-     else if(Math.abs(xOffset)>3){//if target is close to center
-       //System.out.println("0.05");
-       //System.out.println(0.15 * xOffset);
-       left.set(0.07 * xOffset);
-       right.set(0.07 * xOffset);
-     }
-
-     //else{
-       //if(Math.abs(xOffset) <=3 & foo > 28){
-        //myRobot.arcadeDrive(-.55, 0);
-        //System.out.println("active");
-       //}
-       
+    } else if (main.getRawButtonPressed(4)) {
+      myRobot.setMaxOutput(.25);
       // }
-      
-    }
-    //System.out.println(armState);
 
-    if(main.getRawButton(intakeButton)){//intake and shoter mechinisem power.
-      Intake.set(.6);
-    }
-    else if(main.getRawButtonReleased(intakeButton)){
-      Intake.stopMotor();
-    }
-    if(main.getRawButton(intakerev)){
-      Intake.set(-.3);
-    }
-    else if(main.getRawButtonReleased(intakerev)){
-      Intake.stopMotor();
-    }
+      // Reading from serial
+      // spread = sp.readString();
 
-    if(main.getRawButtonPressed(armtrigger) & ArmTrans == 0){
-      ArmTrans = 1;
-    }
- 
-    if(ArmTrans == 1){
-      if(armState == 0){
-        Arm.set(armSpeed);
-        if(lsArmOpen.get()){
-          ArmTrans = 0;
-          armState = 1;
-          Arm.stopMotor();
+      // if serial has given a number larger then 1 parse it into a int
+      if (spread.length() > 1) {
+        foo = Integer.parseInt(spread);
+      }
+      lidar = foo / 25.4;
+
+      double v = tv.getDouble(0.0);
+      // System.out.println(foo);
+
+      if (main.getTrigger()) {// if trigger is pressed
+        double xOffset = tx.getDouble(0.0);
+
+        System.out.println(xOffset);
+        if (Math.abs(xOffset) > 6) {// if the target is far away from center
+          // System.out.println("0.02");
+          // System.out.println(0.02 * xOffset);
+          left.set(0.03 * xOffset);
+          right.set(0.03 * xOffset);
+        } else if (Math.abs(xOffset) > 3) {// if target is close to center
+          // System.out.println("0.05");
+          // System.out.println(0.15 * xOffset);
+          left.set(0.07 * xOffset);
+          right.set(0.07 * xOffset);
+        }
+
+        // else{
+        // if(Math.abs(xOffset) <=3 & foo > 28){
+        // myRobot.arcadeDrive(-.55, 0);
+        // System.out.println("active");
+        // }
+
+        // }
+
+      }
+      // System.out.println(armState);
+
+      if (main.getRawButton(intakeButton)) {// intake and shoter mechinisem power.
+        Intake.set(.6);
+      } else if (main.getRawButtonReleased(intakeButton)) {
+        Intake.stopMotor();
+      }
+      if (main.getRawButton(intakerev)) {
+        Intake.set(-.3);
+      } else if (main.getRawButtonReleased(intakerev)) {
+        Intake.stopMotor();
+      }
+
+      if (main.getRawButtonPressed(armtrigger) & ArmTrans == 0) {
+        ArmTrans = 1;
+      } else if (main.getRawButtonPressed(armtrigger) & ArmTrans == 1) {
+        ArmTrans = 0;
+      }
+
+      if (ArmTrans == 1) {
+        if (armState == 0) {
+          Arm.set(armSpeed);
+          if (lsArmOpen.get()) {
+            ArmTrans = 0;
+            armState = 1;
+            Arm.stopMotor();
+          }
+        } else {
+          Arm.set(-armSpeed);
+          if (lsArmClose.get()) {
+            ArmTrans = 0;
+            armState = 0;
+            Arm.stopMotor();
+          }
+        }
+
+      }
+
+      if (main.getRawButtonPressed(hatchTrigger)) {// is trigger been presses
+        if (hatchState == false) {// is the solinoid alredy extended if not extend
+          hatch.set(DoubleSolenoid.Value.kReverse);
+          hatchState = true;
+          System.out.println("true");
+          // hatch.set(DoubleSolenoid.Value.kOff);
+          // System.out.println(hatch.get());
+        } else {// return to normal
+          hatch.set(DoubleSolenoid.Value.kForward);
+          hatchState = false;
         }
       }
-      else{
-        Arm.set(-armSpeed);
-        if(lsArmClose.get()){
-          ArmTrans = 0;
-          armState = 0;
-          Arm.stopMotor();
-        }      
-      }
-
-
     }
-    
-    if(main.getRawButton(11)){
-      Arm.set(armSpeed);
-    }
-    else if(main.getRawButtonReleased(11)){
-      Arm.stopMotor();
-    }
-    if(main.getRawButton(8)){
-      Arm.set(-armSpeed);
-    }
-    else if(main.getRawButtonReleased(8)){
-      Arm.stopMotor();
-    }
-    
 
+    // if farther the 28 inches from target move forword
+    /*
+     * if(main.getTrigger() & foo > 28){ myRobot.arcadeDrive(-.55, 0);
+     * System.out.println("active"); } //myRobot.stopMotor();
+     * 
+     * 
+     * }
+     */
+  }
 
+  // myRobot.setMaxOutput(.5);
+  // myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0))
 
-
-   /* if(main.getRawButtonPressed(hatchTrigger)){//is trigger been presses
-      if(hatchState == false){//is the solinoid alredy extended if not extend 
-         hatch.set(DoubleSolenoid.Value.kReverse);
-       hatchState = true;
-       System.out.println("true");
-       //hatch.set(DoubleSolenoid.Value.kOff);
-       //System.out.println(hatch.get());
-     }
-     else{//return to normal
-       hatch.set(DoubleSolenoid.Value.kForward);
-       hatchState = false;
-     }
-   } 
+  /*
+   * if(main.getTrigger()){ double xOffset = tx.getDouble(0.0); left.set(.3 *
+   * xOffset); right.set(.3* xOffset); }
    */
-
-
-
-
- //if farther the 28 inches from target move forword   
- /*if(main.getTrigger() & foo > 28){
-     myRobot.arcadeDrive(-.55, 0);
-     System.out.println("active");
-   }
-   //myRobot.stopMotor();
-   
-     
-   }*/
-}
-    
-    
-    
-    
-    //myRobot.setMaxOutput(.5);
-    //myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0));
-   
-      
-    
-   
-        
-   
-    /*if(main.getTrigger()){
-    double xOffset = tx.getDouble(0.0);
-    left.set(.3 * xOffset);
-    right.set(.3* xOffset);
-    }*/
-  
-
-  
 
   @Override
   public void testInit() {
-    
+
   }
 
   @Override
   public void testPeriodic() {
-    //System.out.println(sp.readString(100));
 
-    
-   // String test = (sp.readString(10));
-    //System.out.println(test);
-   // sp.flush();
-   //spread = sp.readString();
-   if(spread.length() > 1)
-   { 
-   spread=spread.substring(0, spread.length() - 2);
- // String t1 = "";
-  
-  foo = Integer.parseInt(spread);
- System.out.println(spread +" "+ spread.length());
-   }
- 
+    // System.out.println(sp.readString(100));
 
+    // String test = (sp.readString(10));
+    // System.out.println(test);
+    // sp.flush();
+    // spread = sp.readString();
+    /*
+     * if(spread.length() > 1) { spread=spread.substring(0, spread.length() - 2); //
+     * String t1 = "";
+     * 
+     * foo = Integer.parseInt(spread); System.out.println(spread +" "+
+     * spread.length()); }
+     */
 
-//try {
- // spread = spread.trim();
-  //System.out.println(spread + " " + spread.length());
-  //  foo = Integer.parseInt(spread);
- // } catch (NumberFormatException e) {
-    
-//}
-  
-  //int foo = Integer.valueOf(spread);
-  //int foo = Integer.parseInt(spread);
-  //if(){
+    // try {
+    // spread = spread.trim();
+    // System.out.println(spread + " " + spread.length());
+    // foo = Integer.parseInt(spread);
+    // } catch (NumberFormatException e) {
+
+    // }
+
+    // int foo = Integer.valueOf(spread);
+    // int foo = Integer.parseInt(spread);
+    // if(){
     // System.out.println("yup its working");
-    
-   //}
-   //else{
-     //System.out.println("its still working");
-   //}
-    
 
-   //System.out.println(us.getRangeInches());
-//System.out.println(ultraSonic.getVoltage()*ultraToinch);
-//Timer.delay(.001);
+    // }
+    // else{
+    // System.out.println("its still working");
+    // }
 
-  //   double xOffset = tx.getDouble(0.0);
-  //  System.out.println(xOffset);
-  //  System.out.println(Math.abs(xOffset));
-   
-  //double yOffset = ty.getDouble(0.0);
-  //System.out.println((26-21.5)/Math.tan(5+yOffset));
+    // System.out.println(us.getRangeInches());
+    // System.out.println(ultraSonic.getVoltage()*ultraToinch);
+    // Timer.delay(.001);
+
+    // double xOffset = tx.getDouble(0.0);
+    // System.out.println(xOffset);
+    // System.out.println(Math.abs(xOffset));
+
+    // double yOffset = ty.getDouble(0.0);
+    // System.out.println((26-21.5)/Math.tan(5+yOffset));
   }
 
 }
