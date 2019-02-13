@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+
 //import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Notifier;//not used
@@ -62,9 +63,10 @@ public class Robot extends TimedRobot {
   int armState = 0;
   double armSpeed = .4;
   int ArmTrans = 0;
-  DigitalInput lsArmOpen, lsArmClose;
   int lsArmOpenp = 0;
   int lsArmClosep = 1;
+  DigitalInput lsArmOpen = new DigitalInput(lsArmOpenp);
+  DigitalInput lsArmClose = new DigitalInput(lsArmClosep);
 
   // drive setup
   DifferentialDrive myRobot = new DifferentialDrive(left, right);
@@ -103,8 +105,7 @@ public class Robot extends TimedRobot {
   
 
   public void robotInit() {
-    DigitalInput lsArmOpen = new DigitalInput(lsArmOpenp);//not used
-    DigitalInput lsArmClose = new DigitalInput(lsArmClosep);//not used
+    
   }
 
   @Override
@@ -135,7 +136,9 @@ public class Robot extends TimedRobot {
       10
       trigger - double xOffset = tx.getDouble(0.0);
     */
-    // cmain.start();
+     
+    
+    //cmain.start();
 
     // NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipepine>").setNumber(1);
     // System.out.println(NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getNumber(1));
@@ -174,8 +177,8 @@ public class Robot extends TimedRobot {
     if (main.getTrigger()) {// if trigger is pressed
       double xOffset = tx.getDouble(0.0);
 
-      System.out.println(xOffset);
-      if (Math.abs(xOffset) > 6) {// if the target is far away from center
+     //System.out.println(xOffset);
+      if (Math.abs(xOffset) > 6 && ArmTrans == 0) {// if the target is far away from center
         // System.out.println("0.02");
         // System.out.println(0.02 * xOffset);
         left.set(0.03 * xOffset);
@@ -199,18 +202,18 @@ public class Robot extends TimedRobot {
     // System.out.println(armState);
 
     if (main.getRawButton(intakeButton)) {// intake and shoter mechinisem power.
-      Intake.set(.6);
+      //Intake.set(.6);
     } else if (main.getRawButtonReleased(intakeButton)) {
       Intake.stopMotor();
     }
     if (main.getRawButton(intakerev)) {
-      Intake.set(-.3);
+      //Intake.set(-.3);
     } else if (main.getRawButtonReleased(intakerev)) {
       Intake.stopMotor();
     }
 
-    if (main.getRawButtonPressed(armtrigger) & ArmTrans == 0) { ArmTrans = 1;}
-    else if(main.getRawButtonPressed(armtrigger) & ArmTrans == 1){ArmTrans = 0;}
+    if (main.getRawButtonPressed(armtrigger) && ArmTrans == 0) { ArmTrans = 1;}
+    else if(main.getRawButtonPressed(armtrigger) && ArmTrans == 1){ArmTrans = 0;}
 
     if (ArmTrans == 1) {
       if (armState == 0) {
@@ -228,7 +231,11 @@ public class Robot extends TimedRobot {
           Arm.stopMotor();
         }
       }
-     
+
+      if(main.getRawButton(11)){Arm.set(armSpeed);}
+      else if(main.getRawButtonReleased(11)){Arm.stopMotor();}
+      if(main.getRawButton(8)){Arm.set(-armSpeed);}
+      else if(main.getRawButtonReleased(8)){Arm.stopMotor();}
 
       
       // System.out.println(foo);
@@ -256,4 +263,56 @@ public class Robot extends TimedRobot {
 
 }
   }
+  @Override
+  public void testInit() {
+
+  }
+
+  @Override
+  public void testPeriodic() {
+    // System.out.println(sp.readString(100));
+
+    // String test = (sp.readString(10));
+    // System.out.println(test);
+    // sp.flush();
+    // spread = sp.readString();
+    if (spread.length() > 1) {
+      spread = spread.substring(0, spread.length() - 2);
+      // String t1 = "";
+
+      foo = Integer.parseInt(spread);
+      System.out.println(spread + " " + spread.length());
+    }
+
+    // try {
+    // spread = spread.trim();
+    // System.out.println(spread + " " + spread.length());
+    // foo = Integer.parseInt(spread);
+    // } catch (NumberFormatException e) {
+
+    // }
+
+    // int foo = Integer.valueOf(spread);
+    // int foo = Integer.parseInt(spread);
+    // if(){
+    // System.out.println("yup its working");
+
+    // }
+    // else{
+    // System.out.println("its still working");
+    // }
+
+    // System.out.println(us.getRangeInches());
+    // System.out.println(ultraSonic.getVoltage()*ultraToinch);
+    // Timer.delay(.001);
+
+    // double xOffset = tx.getDouble(0.0);
+    // System.out.println(xOffset);
+    // System.out.println(Math.abs(xOffset));
+
+    // double yOffset = ty.getDouble(0.0);
+    // System.out.println((26-21.5)/Math.tan(5+yOffset));
+  }
+
 }
+
