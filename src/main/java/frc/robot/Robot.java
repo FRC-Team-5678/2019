@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;//not used
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-//import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.Compressor;//not used
+import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;//not used
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import org.opencv.ml.NormalBayesClassifier;//not used
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -32,20 +32,19 @@ public class Robot extends TimedRobot {
   DoubleSolenoid hatch = new DoubleSolenoid(6, 7);
   boolean hatchState = false;
 
-  // Aurdino testing
-  int foo;
+  // ultrasonic
+  int laser;
   String spread = "0";
   double lidar = 0;
   // SerialPort sp = new SerialPort(115200, SerialPort.Port.kUSB1);
   int number = 0;
 
+ //limelight values
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   NetworkTableEntry tx = table.getEntry("tx");
   NetworkTableEntry ty = table.getEntry("ty");
   NetworkTableEntry ta = table.getEntry("ta");
   NetworkTableEntry tv = table.getEntry("tv");
-
-  // read values periodically
   double v = tv.getDouble(0.0);
   double x = tx.getDouble(0.0);
   double y = ty.getDouble(0.0);
@@ -80,8 +79,7 @@ public class Robot extends TimedRobot {
    * 10 11 - arm extend trigger - double xOffset = tx.getDouble(0.0);
    */
   Joystick main = new Joystick(0);
-  double speedX = main.getRawAxis(0); // change to whats needed
-  double rotatZ = main.getRawAxis(1); // change to whats needed
+ 
 
   int speedhalf = 2;
   int speedfull = 3;
@@ -91,19 +89,42 @@ public class Robot extends TimedRobot {
   int intakerev = 7; // the button number for intake rev
   int armretract = 8;
   int driveregular = 9;
-  int drivereversed = 10;
   int armextend = 11;
 
-  public void robotInit() {
 
+
+  //smart dashboard
+  private static final String kDefaultAuto = "Arm Open";
+  private static final String kCustomAuto = "Arm Close";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+
+  public void robotInit() {
+    //sends data to smart dashboard
+    m_chooser.setDefaultOption("Arm Open", kDefaultAuto);
+    m_chooser.addOption("Arm Close", kCustomAuto);
+    SmartDashboard.putData("Auto choices", m_chooser);
   }
+  
 
   @Override
   public void autonomousInit() {
+    //reads data from smart dashboard
+    m_autoSelected = m_chooser.getSelected();
   }
 
   @Override
   public void autonomousPeriodic() {
+    switch (m_autoSelected) {
+      case kCustomAuto:
+       armState = 1;
+        break;
+      case kDefaultAuto:
+      default:
+       armState = 0;
+        break;
+    }
 
   }
 
@@ -123,28 +144,26 @@ public class Robot extends TimedRobot {
     cmain.start();
     // cmain.stop();
 
-    // NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipepine>").setNumber(1);
-    // System.out.println(NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getNumber(1));
+   
 
     // Drive direction
     if (drivedirection == regular) {
       myRobot.arcadeDrive(main.getY(), main.getX());
     } // sets drive to regular
     else if (drivedirection == reversed) {
-      myRobot.arcadeDrive(-main.getY(), -main.getX());
+      myRobot.arcadeDrive(main.getY(), -main.getX());
     } // sets drive to reversed
     else {
-      myRobot.arcadeDrive(main.getY(), main.getX());
+      myRobot.arcadeDrive(-main.getY(), main.getX());
     } // defaults to regular drive
 
     // Drive Direction Selection
-    if (main.getRawButtonPressed(driveregular)) {
+    if (main.getRawButtonPressed(driveregular) && drivedirection == reversed) {
       drivedirection = regular;
-    } else if (main.getRawButtonPressed(drivereversed)) {
+    } else if (main.getRawButtonPressed(driveregular) && drivedirection == regular) {
       drivedirection = reversed;
     }
 
-    // main.getRawButtonPressed();
 
     if (main.getRawButtonPressed(speedfull)) { // sets speed
       myRobot.setMaxOutput(1);
@@ -153,23 +172,19 @@ public class Robot extends TimedRobot {
     } else if (main.getRawButtonPressed(speedhalf)) {
       myRobot.setMaxOutput(.5);
     }
-    // else if(main.getRawButtonPressed(4)){
-    // myRobot.setMaxOutput(.25);
-    // }
 
-    // Reading from serial
     // spread = sp.readString();
 
     // if serial has given a number larger then 1 parse it into a int
     if (spread.length() > 1) {
       spread = spread.substring(0, spread.length() - 2);
-      foo = Integer.parseInt(spread);
+      laser = Integer.parseInt(spread);
     }
-    lidar = foo / 25.4;
+    lidar = laser / 25.4;
     double v = tv.getDouble(0.0);// not used
     // System.out.println(foo);
 
-    if (main.getTrigger()) {// if trigger is pressed
+    if (main.getTrigger() && armState == 0) {// if trigger is pressed
       double xOffset = tx.getDouble(0.0);
 
       System.out.println(xOffset);
@@ -183,18 +198,13 @@ public class Robot extends TimedRobot {
         // System.out.println(0.15 * xOffset);
         left.set(0.07 * xOffset);
         right.set(0.07 * xOffset);
+      } else {
+        if (Math.abs(xOffset) <= 3 & lidar > 28) {
+          myRobot.arcadeDrive(-.55, 0);
+          System.out.println("active");
+        }
       }
-
-      // else{
-      // if(Math.abs(xOffset) <=3 & foo > 28){
-      // myRobot.arcadeDrive(-.55, 0);
-      // System.out.println("active");
-      // }
-
-      // }
-
     }
-    // System.out.println(armState);
 
     if (main.getRawButton(intakeButton)) {// intake and shoter mechinisem power.
       Intake.set(.6);
@@ -207,25 +217,22 @@ public class Robot extends TimedRobot {
       Intake.stopMotor();
     }
 
-    if (main.getRawButton(armtrigger)) {
+    if (main.getRawButton(armtrigger)) { // activates arm movment
       ArmTrans = 1;
-      // System.out.println("true");
+
     }
-
-    // System.out.println(ArmTrans);
-
-    if (ArmTrans == 1) {
-      if (armState == 0) {
+    if (ArmTrans == 1) {//if arm is supposed to be moving
+      if (armState == 0) {//if arm is closed then open arm
         Arm.set(armSpeed);
-        if (lsArmOpen.get()) {
+        if (lsArmOpen.get()) {//if open limit switch is pressed stop the arm
           ArmTrans = 0;
           armState = 1;
           Arm.stopMotor();
         }
 
-      } else {
+      } else { // if the arm is open then close
         Arm.set(-armSpeed);
-        if (lsArmClose.get()) {
+        if (lsArmClose.get()) {//if the close limit switch is pressed then stop arm
           ArmTrans = 0;
           armState = 0;
           Arm.stopMotor();
@@ -242,7 +249,11 @@ public class Robot extends TimedRobot {
      * !lsArmOpen.get()) { Arm.set(armSpeed); } if (main.getRawButton(8) &&
      * !lsArmClose.get()) { Arm.set(-armSpeed); System.out.println("true"); }
      */
-    if (main.getRawButtonPressed(4)) {
+   
+   
+   
+   
+     if (main.getRawButtonPressed(4) && armState == 0) {
       if (hatchState == false) {// is the solinoid alredy extended if not extend
         hatch.set(DoubleSolenoid.Value.kReverse);
         hatchState = true;
@@ -256,23 +267,7 @@ public class Robot extends TimedRobot {
     }
 
   }
-  // if farther the 28 inches from target move forword
-  /*
-   * if(main.getTrigger() & foo > 28){ myRobot.arcadeDrive(-.55, 0);
-   * System.out.println("active"); } //myRobot.stopMotor();
-   * 
-   * 
-   * }
-   */
-
-  // myRobot.setMaxOutput(.5);
-  // myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0));
-
-  /*
-   * if(main.getTrigger()){ double xOffset = tx.getDouble(0.0); left.set(.3 *
-   * xOffset); right.set(.3* xOffset); }
-   */
-
+ 
   @Override
   public void testInit() {
 
@@ -286,13 +281,6 @@ public class Robot extends TimedRobot {
     // System.out.println(test);
     // sp.flush();
     // spread = sp.readString();
-    if (spread.length() > 1) {
-      spread = spread.substring(0, spread.length() - 2);
-      // String t1 = "";
-
-      foo = Integer.parseInt(spread);
-      System.out.println(spread + " " + spread.length());
-    }
 
     // try {
     // spread = spread.trim();
