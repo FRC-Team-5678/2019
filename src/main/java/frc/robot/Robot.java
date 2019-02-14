@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
   // hatch veriables
   int armtrigger = 10;
   int armState = 0;
-  double armSpeed = .4;
+  double armSpeed = .6;
   int ArmTrans = 0;
   int lsArmOpenp = 1;
   int lsArmClosep = 0;
@@ -120,8 +120,8 @@ public class Robot extends TimedRobot {
      * myRobot.setMaxOutput(.75); 6 7 8 9 10 trigger - double xOffset =
      * tx.getDouble(0.0);
      */
-    // cmain.start();
-    cmain.stop();
+    cmain.start();
+    // cmain.stop();
 
     // NetworkTableInstance.getDefault().getTable("limelight").getEntry("<pipepine>").setNumber(1);
     // System.out.println(NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getNumber(1));
