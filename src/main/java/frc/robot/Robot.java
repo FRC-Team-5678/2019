@@ -1,273 +1,80 @@
 /*----------------------------------------------------------------------------*/
 /* Deep Space 2019                                                            */
-/* By:Andrew Levin                                                            */
+/* Codded By:Andrew Levin                                                     */
+/* Cleaned Up By:Walter Hicks                                                 */
 /* Team#5678                                                                  */
-/* name # orion                                                                           */
+/* name # orion                                                               */
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
 
-//import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Notifier;//not used
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;//not used
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import org.opencv.ml.NormalBayesClassifier;//not used
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.SerialPort;//not used
+import frc.classes.*;
 
 public class Robot extends TimedRobot {
-
-  // pnumatics
-  int hatchTrigger = 4;
-  Compressor cmain = new Compressor(0);
-  DoubleSolenoid hatch = new DoubleSolenoid(6, 7);
-  boolean hatchState = false;
-
-  // ultrasonic
-  int laser;
-  String spread = "0";
-  double lidar = 0;
-  // SerialPort sp = new SerialPort(115200, SerialPort.Port.kUSB1);
-  int number = 0;
-
- //limelight values
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  NetworkTableEntry tx = table.getEntry("tx");
-  NetworkTableEntry ty = table.getEntry("ty");
-  NetworkTableEntry ta = table.getEntry("ta");
-  NetworkTableEntry tv = table.getEntry("tv");
-  double v = tv.getDouble(0.0);
-  double x = tx.getDouble(0.0);
-  double y = ty.getDouble(0.0);
-  double area = ta.getDouble(0.0);
-
-  // motor setup
-  Spark left = new Spark(0);
-  Spark right = new Spark(1);
-  Spark Intake = new Spark(2);
-  Spark Arm = new Spark(4);
-
-  // hatch veriables
-  int armtrigger = 10;
-  int armState = 0;
-  double armSpeed = .6;
-  int ArmTrans = 0;
-  int lsArmOpenp = 1;
-  int lsArmClosep = 0;
-  DigitalInput lsArmClose = new DigitalInput(lsArmClosep);
-  DigitalInput lsArmOpen = new DigitalInput(lsArmOpenp);
-
-  // drive setup
-  DifferentialDrive myRobot = new DifferentialDrive(left, right);
-  boolean regular = true;
-  boolean reversed = false;
-  boolean drivedirection = regular;
-  // Joystick setup
-  /*
-   * Button Assignment 1 2 - myRobot.setMaxOutput(.5); 3 -
-   * myRobot.setMaxOutput(1); 4 - myRobot.setMaxOutput(.25); (commented out) 5 -
-   * myRobot.setMaxOutput(.75); 6 - intakeButton 7 - intakerev 8 - arm retract 9
-   * 10 11 - arm extend trigger - double xOffset = tx.getDouble(0.0);
-   */
-  Joystick main = new Joystick(0);
- 
-
-  int speedhalf = 2;
-  int speedfull = 3;
-  // int speed1quarter = 4;
-  int speed3quarter = 5;
-  int intakeButton = 6; // the button number for intake
-  int intakerev = 7; // the button number for intake rev
-  int armretract = 8;
-  int driveregular = 9;
-  int armextend = 11;
-
-
-
-  //smart dashboard
-  private static final String kDefaultAuto = "Arm Open";
-  private static final String kCustomAuto = "Arm Close";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
+  // DECLARATION
+  Compressor cmain;
+  NetworkTable table;
+  NetworkTableEntry tx, ty, ta, tv;
+  DifferentialDrive myRobot;
+  public Spark Mleft, Mright, MIntake, MArm;
+  public Joystick main;
+  public DigitalInput IsArmClose, IsArmOpen;
+  int foo, armState, ArmTrans;
+  boolean  regular, reversed, drivedirection;
+  double v, x, y, area, lidar;
+  String spread;
+  Robot_Map map = new Robot_Map();
+  Hatch hatch = new Hatch();
+  SmartDash dash = new SmartDash();
+  Intake intake = new Intake();
 
   public void robotInit() {
-    //sends data to smart dashboard
-    m_chooser.setDefaultOption("Arm Open", kDefaultAuto);
-    m_chooser.addOption("Arm Close", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    dash.init();
+    motors();
+    network_table_init();
+    limelight_init();
+    pnumatics_init();
+    hatch_init();
+    controls_init();
+    drive_init();
+
   }
-  
 
   @Override
   public void autonomousInit() {
-    //reads data from smart dashboard
-    m_autoSelected = m_chooser.getSelected();
   }
 
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-       armState = 1;
-        break;
-      case kDefaultAuto:
-      default:
-       armState = 0;
-        break;
-    }
-
   }
 
   @Override
   public void teleopInit() {
-
   }
 
   @Override
   public void teleopPeriodic() {
-    /*
-     * Button Assignment 1 2 - myRobot.setMaxOutput(.5); 3 -
-     * myRobot.setMaxOutput(1); 4 - myRobot.setMaxOutput(.25); (commented out) 5 -
-     * myRobot.setMaxOutput(.75); 6 7 8 9 10 trigger - double xOffset =
-     * tx.getDouble(0.0);
-     */
     cmain.start();
-    // cmain.stop();
-
-   
-
-    // Drive direction
-    if (drivedirection == regular) {
-      myRobot.arcadeDrive(main.getY(), main.getX());
-    } // sets drive to regular
-    else if (drivedirection == reversed) {
-      myRobot.arcadeDrive(main.getY(), -main.getX());
-    } // sets drive to reversed
-    else {
-      myRobot.arcadeDrive(-main.getY(), main.getX());
-    } // defaults to regular drive
-
-    // Drive Direction Selection
-    if (main.getRawButtonPressed(driveregular) && drivedirection == reversed) {
-      drivedirection = regular;
-    } else if (main.getRawButtonPressed(driveregular) && drivedirection == regular) {
-      drivedirection = reversed;
-    }
-
-
-    if (main.getRawButtonPressed(speedfull)) { // sets speed
-      myRobot.setMaxOutput(1);
-    } else if (main.getRawButtonPressed(speed3quarter)) {
-      myRobot.setMaxOutput(.75);
-    } else if (main.getRawButtonPressed(speedhalf)) {
-      myRobot.setMaxOutput(.5);
-    }
-
-    // spread = sp.readString();
-
-    // if serial has given a number larger then 1 parse it into a int
-    if (spread.length() > 1) {
-      spread = spread.substring(0, spread.length() - 2);
-      laser = Integer.parseInt(spread);
-    }
-    lidar = laser / 25.4;
-    double v = tv.getDouble(0.0);// not used
-    // System.out.println(foo);
-
-    if (main.getTrigger() && armState == 0) {// if trigger is pressed
-      double xOffset = tx.getDouble(0.0);
-
-      System.out.println(xOffset);
-      if (Math.abs(xOffset) > 6) {// if the target is far away from center
-        // System.out.println("0.02");
-        // System.out.println(0.02 * xOffset);
-        left.set(0.03 * xOffset);
-        right.set(0.03 * xOffset);
-      } else if (Math.abs(xOffset) > 3) {// if target is close to center
-        // System.out.println("0.05");
-        // System.out.println(0.15 * xOffset);
-        left.set(0.07 * xOffset);
-        right.set(0.07 * xOffset);
-      } else {
-        if (Math.abs(xOffset) <= 3 & lidar > 28) {
-          myRobot.arcadeDrive(-.55, 0);
-          System.out.println("active");
-        }
-      }
-    }
-
-    if (main.getRawButton(intakeButton)) {// intake and shoter mechinisem power.
-      Intake.set(.6);
-    } else if (main.getRawButtonReleased(intakeButton)) {
-      Intake.stopMotor();
-    }
-    if (main.getRawButton(intakerev)) {
-      Intake.set(-.3);
-    } else if (main.getRawButtonReleased(intakerev)) {
-      Intake.stopMotor();
-    }
-
-    if (main.getRawButton(armtrigger)) { // activates arm movment
-      ArmTrans = 1;
-
-    }
-    if (ArmTrans == 1) {//if arm is supposed to be moving
-      if (armState == 0) {//if arm is closed then open arm
-        Arm.set(armSpeed);
-        if (lsArmOpen.get()) {//if open limit switch is pressed stop the arm
-          ArmTrans = 0;
-          armState = 1;
-          Arm.stopMotor();
-        }
-
-      } else { // if the arm is open then close
-        Arm.set(-armSpeed);
-        if (lsArmClose.get()) {//if the close limit switch is pressed then stop arm
-          ArmTrans = 0;
-          armState = 0;
-          Arm.stopMotor();
-        }
-
-      }
-
-    }
-
-    /*
-     * else if (main.getRawButtonReleased(armretract) || lsArmClose.get()) {
-     * Arm.stopMotor(); } else if (main.getRawButtonReleased(armextend) ||
-     * lsArmOpen.get()) { Arm.stopMotor(); } if (main.getRawButton(11) &&
-     * !lsArmOpen.get()) { Arm.set(armSpeed); } if (main.getRawButton(8) &&
-     * !lsArmClose.get()) { Arm.set(-armSpeed); System.out.println("true"); }
-     */
-   
-   
-   
-   
-     if (main.getRawButtonPressed(4) && armState == 0) {
-      if (hatchState == false) {// is the solinoid alredy extended if not extend
-        hatch.set(DoubleSolenoid.Value.kReverse);
-        hatchState = true;
-      } // hatch.set(DoubleSolenoid.Value.kOff);
-      // System.out.println(hatch.get()); }
-      else {
-        hatch.set(DoubleSolenoid.Value.kForward);
-        hatchState = false;
-      }
-      // System.out.println(hatchState);
-    }
-
+    drive();
+    drive_select();
+    speed_select();
+    wot();
+    center();
+    intake();
+    arm_trans();
+    hatch();
   }
- 
+
   @Override
   public void testInit() {
 
@@ -275,40 +82,139 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    // System.out.println(sp.readString(100));
 
-    // String test = (sp.readString(10));
-    // System.out.println(test);
-    // sp.flush();
-    // spread = sp.readString();
+    if (spread.length() > 1) {
+      spread = spread.substring(0, spread.length() - 2);
+      // String t1 = "";
 
-    // try {
-    // spread = spread.trim();
-    // System.out.println(spread + " " + spread.length());
-    // foo = Integer.parseInt(spread);
-    // } catch (NumberFormatException e) {
+      foo = Integer.parseInt(spread);
+      System.out.println(spread + " " + spread.length());
+    }
+  }
 
-    // }
+  void ports() {
+  }
 
-    // int foo = Integer.valueOf(spread);
-    // int foo = Integer.parseInt(spread);
-    // if(){
-    // System.out.println("yup its working");
+  void motors() {
+    Mleft = new Spark(map.left);
+    Mright = new Spark(map.right);
+    MIntake = new Spark(map.intake);
+    MArm = new Spark(map.arm);
+  }
 
-    // }
-    // else{
-    // System.out.println("its still working");
-    // }
+  void network_table_init() {
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
+    ta = table.getEntry("ta");
+    tv = table.getEntry("tv");
+  }
 
-    // System.out.println(us.getRangeInches());
-    // System.out.println(ultraSonic.getVoltage()*ultraToinch);
-    // Timer.delay(.001);
+  void limelight_init() {
+    v = tv.getDouble(0.0);
+    x = tx.getDouble(0.0);
+    y = ty.getDouble(0.0);
+    area = ta.getDouble(0.0);
+  }
 
-    // double xOffset = tx.getDouble(0.0);
-    // System.out.println(xOffset);
-    // System.out.println(Math.abs(xOffset));
+  void pnumatics_init() {
+    cmain = new Compressor(map.compressor);
+  }
 
-    // double yOffset = ty.getDouble(0.0);
-    // System.out.println((26-21.5)/Math.tan(5+yOffset));
+
+  void hatch_init() {
+    armState = 0;
+    ArmTrans = 0;
+    IsArmClose = new DigitalInput(map.LimitArmClosep);
+    IsArmOpen = new DigitalInput(map.LimitArmOpenp);
+  }
+
+  void controls_init() {
+    main = new Joystick(map.joysticPort);
+  }
+
+  void drive_init() {
+    // drive setup
+    myRobot = new DifferentialDrive(Mleft, Mright);
+    regular = true;
+    reversed = false;
+    drivedirection = regular;
+  }
+
+  void andrew_WOT() {
+    foo = 0;
+    spread = "0";
+    lidar = 0;
+  }
+
+  void drive() {
+    if (drivedirection == regular) {
+      myRobot.arcadeDrive(main.getY(), main.getX());
+    } // sets drive to regular
+    else if (drivedirection == reversed) {
+      myRobot.arcadeDrive(-main.getY(), -main.getX());
+    } // sets drive to reversed
+    else {
+      myRobot.arcadeDrive(main.getY(), main.getX());
+    } // defaults to regular drive
+  }
+
+  void drive_select() {
+    if (main.getRawButtonPressed(map.driveselector)) {
+      if (drivedirection = reversed) {
+        drivedirection = regular;
+      } else if (drivedirection = regular) {
+        drivedirection = reversed;
+      }
+    }
+  }
+
+  void speed_select() {
+    if (main.getRawButtonPressed(map.speedfull)) { // sets speed
+      myRobot.setMaxOutput(1);
+    } else if (main.getRawButtonPressed(map.speed3quarter)) {
+      myRobot.setMaxOutput(.75);
+    } else if (main.getRawButtonPressed(map.speedhalf)) {
+      myRobot.setMaxOutput(.5);
+    }
+  }
+
+  void wot() {
+    if (spread.length() > 1) {
+      spread = spread.substring(0, spread.length() - 2);
+      foo = Integer.parseInt(spread);
+    }
+    lidar = foo / 25.4;
+  }
+
+  void center() {
+    if (main.getTrigger()) {// if trigger is pressed
+      double xOffset = tx.getDouble(0.0);
+
+      System.out.println(xOffset);
+      if (Math.abs(xOffset) > 6) {// if the target is far away from center
+        Mleft.set(0.03 * xOffset);
+        Mright.set(0.03 * xOffset);
+      } else if (Math.abs(xOffset) > 3) {// if target is close to center
+        Mleft.set(0.07 * xOffset);
+        Mright.set(0.07 * xOffset);
+      }
+    }
+  }
+
+  void intake() {
+    intake.intake();
+  }
+
+  void arm_trans() {
+    if (main.getRawButton(map.armtrigger)) {
+      hatch.move();
+    }
+  }
+
+  void hatch() {
+    if (main.getRawButtonPressed(map.hatchTrigger)) {
+      hatch.hatch();
+    }
   }
 }
