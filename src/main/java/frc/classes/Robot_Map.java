@@ -12,29 +12,29 @@ package frc.classes;
  */
 public class Robot_Map {
     //Ports
-    public int compressor = 0;
-    public int hatch_Solenoid_1 = 6;
-    public int hatch_Solenoid_2 = 7;
-    public int left = 0;
-    public int right = 1;
-    public int intake = 2;
-    public int arm = 3;
-    public int LimitArmOpenp = 1;
-    public int LimitArmClosep = 0;
+    public static int compressor = 0;
+    public static int hatch_Solenoid_1 = 6;
+    public static int hatch_Solenoid_2 = 7;
+    public static int left = 0;
+    public static int right = 1;
+    public static int intake = 2;
+    public static int arm = 4;
+    public static int LimitArmOpenp = 1;
+    public static int LimitArmClosep = 0;
 
     //Joystic Buttons
-    public int joysticPort = 0;
-    public int speedhalf = 2;
-    public int speedfull = 3;
-    public int hatchTrigger = 4;
-    public int speed3quarter = 5;
-    public int intakeButton = 6; // the button number for intake
-    public int intakerev = 7; // the button number for intake rev
-    public int armretract = 8;
-    public int driveselector = 9;
-    public int armtrigger = 10;
-    public int armextend = 11;
+    public static int joysticPort = 0;
+    public static int speedhalf = 2;
+    public static int speedfull = 3;
+    public static int hatchTrigger = 4;
+    public static int speed3quarter = 5;
+    public static int intakeButton = 6; // the button number for intake
+    public static int intakerev = 7; // the button number for intake rev
+    public static int armretract = 8;
+    public static int driveselector = 9;
+    public static int armtrigger = 10;
+    public static int armextend = 11;
 
     //Hatch
-    public double armSpeed = .6;
+    public static double armSpeed = .6;
 }

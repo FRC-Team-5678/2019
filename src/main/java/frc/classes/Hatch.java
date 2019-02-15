@@ -13,28 +13,36 @@ import frc.classes.Robot_Map;
 import frc.classes.SmartDash;
 import frc.robot.Robot;
 
-
 public class Hatch {
-    Robot_Map map = new Robot_Map();
     SmartDash dash = new SmartDash();
-    Robot bot = new Robot();
+    Robot bot;
     boolean hatchState = false;
-    DoubleSolenoid hatch = new DoubleSolenoid(map.hatch_Solenoid_1, map.hatch_Solenoid_2);
-    int ArmTrans = 1;
-    public int armState = 0;
+    DoubleSolenoid hatch = new DoubleSolenoid(Robot_Map.hatch_Solenoid_1, Robot_Map.hatch_Solenoid_2);
+    public int ArmTrans = 0;
+    public int armState = 1;
 
+    public Hatch(Robot robot) {
+        this.bot = robot;
+    }
     public void move() {
+        ArmTrans = 1;
+        System.out.println("Move1");
         if (ArmTrans == 1) {
+            System.out.println("Move2");
             if (armState == 0) {
-                bot.MArm.set(map.armSpeed);
-                if (bot.IsArmOpen.get()) {
+                System.out.println("Move3");
+                bot.MArm.set(Robot_Map.armSpeed);
+                if (bot.IsArmOpen.get()==true) {
+                    System.out.println("Move4");
                     ArmTrans = 0;
                     armState = 1;
                     bot.MArm.stopMotor();
                 }
             } else {
-                bot.MArm.set(-map.armSpeed);
-                if (bot.IsArmOpen.get()) {
+                System.out.println("Move6");
+                bot.MArm.set(-Robot_Map.armSpeed);
+                if (bot.IsArmClose.get()==true) {
+                    System.out.println("Move5");
                     ArmTrans = 0;
                     armState = 0;
                     bot.MArm.stopMotor();

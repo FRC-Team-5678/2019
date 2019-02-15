@@ -14,18 +14,20 @@ import frc.robot.Robot;
  * Add your docs here.
  */
 public class Intake {
-    Robot_Map map = new Robot_Map();
     SmartDash dash = new SmartDash();
-    Robot bot = new Robot();
+    Robot bot;
+    public Intake(Robot robot){
+        this.bot = robot;
+    }
     public void intake(){
-        if (bot.main.getRawButton(map.intakeButton)) {// intake and shoter mechinisem power.
+        if (bot.main.getRawButton(Robot_Map.intakeButton)) {// intake and shoter mechinisem power.
             bot.MIntake.set(.6);
-          } else if (bot.main.getRawButtonReleased(map.intakeButton)) {
+          } else if (bot.main.getRawButtonReleased(Robot_Map.intakeButton)) {
             bot.MIntake.stopMotor();
           }
-          if (bot.main.getRawButton(map.intakerev)) {
+          if (bot.main.getRawButton(Robot_Map.intakerev)) {
             bot.MIntake.set(-.3);
-          } else if (bot.main.getRawButtonReleased(map.intakerev)) {
+          } else if (bot.main.getRawButtonReleased(Robot_Map.intakerev)) {
             bot.MIntake.stopMotor();
           }
     }
