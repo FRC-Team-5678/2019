@@ -19,20 +19,24 @@ public class Robot_Map {
     public static int right = 1;
     public static int intake = 2;
     public static int arm = 4;
-    public static int LimitArmOpenp = 1;
+    public static int LimitArmOpenp = 8;
     public static int LimitArmClosep = 0;
+   
+    //Leds
+    public static int Down = 1;
+    public static int Up = 0;
 
     //Joystic Buttons
     public static int joysticPort = 0;
-    public static int speedhalf = 2;
-    public static int speedfull = 3;
+    public static int speedhalf = 10;
+    public static int speedfull = 7;
     public static int hatchTrigger = 4;
     public static int speed3quarter = 5;
-    public static int intakeButton = 6; // the button number for intake
-    public static int intakerev = 7; // the button number for intake rev
+    public static int intakeButton = 3; // the button number for intake
+    public static int intakerev = 5; // the button number for intake rev
     public static int armretract = 8;
     public static int driveselector = 9;
-    public static int armtrigger = 10;
+    public static int armtrigger = 2;
     public static int armextend = 11;
 
     //Hatch

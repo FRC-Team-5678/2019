@@ -12,68 +12,103 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.classes.*;
 
 public class Robot extends TimedRobot {
   // DECLARATION
-  Compressor cmain;
-  NetworkTable table;
-  NetworkTableEntry tx, ty, ta, tv;
-  DifferentialDrive myRobot;
+  public Compressor cmain;
+  public DifferentialDrive myRobot;
   public Spark Mleft, Mright, MIntake, MArm;
   public Joystick main;
   public DigitalInput IsArmClose, IsArmOpen;
-  int foo, armState, ArmTrans;
-  boolean  regular, reversed, drivedirection;
-  double v, x, y, area, lidar;
-  String spread;
-  Hatch hatch = new Hatch(this);
-  SmartDash dash = new SmartDash();
-  Intake intake = new Intake(this);
+  int armState, ArmTrans;
+  double regular, reversed, drivedirection;
+  SmartDash dash = new SmartDash(this);
+  Hatch hatch = new Hatch(this, dash);
+  Intake intake = new Intake(this, dash);
+  Vision vision = new Vision(this);
+  public SerialPort aNano = new SerialPort(9600, Port.kUSB1);
+  LED lights = new LED(dash, aNano);
+  Auto auto = new Auto(this);
 
   public void robotInit() {
-    //SerialPort sp = new SerialPort(115200, SerialPort.Port.kUSB1);
+    aNano.enableTermination();
+    aNano.setReadBufferSize(4);
     dash.init();
     motors();
-    network_table_init();
-    limelight_init();
+    vision.network_table_init();
+    vision.limelight_init();
     pnumatics_init();
     hatch_init();
     controls_init();
     drive_init();
-
+    vision.sData();
+    lights.up();
   }
 
   @Override
   public void autonomousInit() {
+    vision.sData();
+
   }
 
   @Override
   public void autonomousPeriodic() {
+    vision.sData();
+    if (dash.A_Chooser.getSelected() == 1) {
+      hatch.Arm_Open();
+      cmain.start();
+      // cmain.stop();
+      drive();
+      drive_select();
+      speed_select();
+      center();
+      intake();
+      arm_trans();
+      hatch();
+      hatch.arm();
+      vision.sData();
+      dash.Always();
+    } else {
+      cmain.start();
+      // cmain.stop();
+      drive();
+      drive_select();
+      speed_select();
+      center();
+      // intake();
+      arm_trans();
+      hatch();
+      hatch.arm();
+      vision.sData();
+      dash.Always();
+    }
   }
 
   @Override
   public void teleopInit() {
+    vision.sData();
   }
 
   @Override
   public void teleopPeriodic() {
     cmain.start();
+    // cmain.stop();
     drive();
     drive_select();
     speed_select();
-    wot();
     center();
     intake();
     arm_trans();
     hatch();
+    hatch.arm();
+    vision.sData();
+    dash.Always();
 
   }
 
@@ -84,10 +119,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    System.out.println("Close: "+IsArmClose.get());
-      
-        System.out.println("Open: "+IsArmOpen.get());
-   
+    System.out.println("Close: " + IsArmClose.get());
+
+    System.out.println("Open: " + IsArmOpen.get());
+
   }
 
   void motors() {
@@ -97,126 +132,84 @@ public class Robot extends TimedRobot {
     MArm = new Spark(Robot_Map.arm);
   }
 
-  void network_table_init() {
-    table = NetworkTableInstance.getDefault().getTable("limelight");
-    tx = table.getEntry("tx");
-    ty = table.getEntry("ty");
-    ta = table.getEntry("ta");
-    tv = table.getEntry("tv");
-  }
-
-  void limelight_init() {
-    v = tv.getDouble(0.0);
-    x = tx.getDouble(0.0);
-    y = ty.getDouble(0.0);
-    area = ta.getDouble(0.0);
-  }
-
-  void pnumatics_init() {
+  public void pnumatics_init() {
     cmain = new Compressor(Robot_Map.compressor);
   }
 
-
-  void hatch_init() {
+  public void hatch_init() {
     armState = 0;
     ArmTrans = 0;
     IsArmClose = new DigitalInput(Robot_Map.LimitArmClosep);
     IsArmOpen = new DigitalInput(Robot_Map.LimitArmOpenp);
   }
 
-  void controls_init() {
+  public void controls_init() {
     main = new Joystick(Robot_Map.joysticPort);
   }
 
-  void drive_init() {
+  public void drive_init() {
     // drive setup
     myRobot = new DifferentialDrive(Mleft, Mright);
-    regular = true;
-    reversed = false;
+    regular = 1;
+    reversed = -1;
     drivedirection = regular;
   }
 
-  void andrew_WOT() {
-    foo = 0;
-    spread = "0";
-    lidar = 0;
+  public void drive() {
+    /*
+     * if (drivedirection == regular) { myRobot.arcadeDrive(-main.getY(),
+     * main.getX()); } // sets drive to regular else if (drivedirection == reversed)
+     * { myRobot.arcadeDrive(main.getY(), main.getX()); } // sets drive to reversed
+     * else { myRobot.arcadeDrive(-main.getY(), main.getX()); } // defaults to
+     * regular drive
+     */
+    myRobot.arcadeDrive(drivedirection * main.getY(), main.getX());
   }
 
-  void drive() {
-    if (drivedirection == regular) {
-      myRobot.arcadeDrive(-main.getY(), main.getX());
-    } // sets drive to regular
-    else if (drivedirection == reversed) {
-      myRobot.arcadeDrive(main.getY(), main.getX());
-    } // sets drive to reversed
-    else {
-      myRobot.arcadeDrive(-main.getY(), main.getX());
-    } // defaults to regular drive
-  }
-
-  void drive_select() {
-    if (main.getRawButtonPressed(Robot_Map.driveselector)) {
-      if (drivedirection = reversed) {
+  public void drive_select() {
+    if (main.getTriggerPressed()) {
+      if (drivedirection == reversed) {
         drivedirection = regular;
-      } else if (drivedirection = regular) {
+        lights.up();
+      } else if (drivedirection == regular) {
         drivedirection = reversed;
+        lights.down();
+
       }
     }
   }
 
-  void speed_select() {
+  public void speed_select() {
     if (main.getRawButtonPressed(Robot_Map.speedfull)) { // sets speed
       myRobot.setMaxOutput(1);
     } else if (main.getRawButtonPressed(Robot_Map.speed3quarter)) {
       myRobot.setMaxOutput(.75);
     } else if (main.getRawButtonPressed(Robot_Map.speedhalf)) {
-      myRobot.setMaxOutput(.5);
+      myRobot.setMaxOutput(.625);
     }
   }
 
-  void wot() {
-    /*
-    if (spread.length() > 1) {
-      spread = spread.substring(0, spread.length() - 2);
-      foo = Integer.parseInt(spread);
+  public void center() {
+    
+      if (main.getTrigger()) {// if trigger is pressed vision.visionAim();
+      vision.visionMove(); } 
+      else if(main.getTriggerReleased()){ vision.lidarActive = 0; } 
     }
-    lidar = foo / 25.4;
-    */
-  }
+     
 
-  void center() {
-    if (main.getTrigger()) {// if trigger is pressed
-      double xOffset = tx.getDouble(0.0);
-
-      System.out.println(xOffset);
-      if (Math.abs(xOffset) > 6) {// if the target is far away from center
-        Mleft.set(0.03 * xOffset);
-        Mright.set(0.03 * xOffset);
-      } else if (Math.abs(xOffset) > 3) {// if target is close to center
-        Mleft.set(0.07 * xOffset);
-        Mright.set(0.07 * xOffset);
-      }
-    }
-  }
-
-  void intake() {
+  public void intake() {
     intake.intake();
   }
 
-  void arm_trans() {
+  public void arm_trans() {
     if (main.getRawButtonPressed(Robot_Map.armtrigger)) {
+      hatch.move();
       
-        System.out.println("Close: "+IsArmClose.get());
-      
-        System.out.println("Open: "+IsArmOpen.get());
-      
-      
-     hatch.move();
-     System.out.println(hatch.armState);
+
     }
   }
 
-  void hatch() {
+  public void hatch() {
     if (main.getRawButtonPressed(Robot_Map.hatchTrigger)) {
       hatch.hatch();
     }

@@ -14,10 +14,11 @@ import frc.robot.Robot;
  * Add your docs here.
  */
 public class Intake {
-    SmartDash dash = new SmartDash();
-    Robot bot;
-    public Intake(Robot robot){
+  SmartDash dash;
+  Robot bot;
+    public Intake(Robot robot, SmartDash dash){
         this.bot = robot;
+        this.dash = dash;
     }
     public void intake(){
         if (bot.main.getRawButton(Robot_Map.intakeButton)) {// intake and shoter mechinisem power.
