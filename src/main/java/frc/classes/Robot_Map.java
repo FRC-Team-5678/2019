@@ -38,6 +38,7 @@ public class Robot_Map {
     public static int driveselector = 9;
     public static int armtrigger = 2;
     public static int armextend = 11;
+    public static int vision = 6;
 
     //Hatch
     public static double armSpeed = .6;

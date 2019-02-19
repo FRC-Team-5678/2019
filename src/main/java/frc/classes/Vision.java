@@ -7,7 +7,6 @@
 
 package frc.classes;
 
-
 import frc.robot.Robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -22,12 +21,12 @@ public class Vision {
     Hatch hatch;
     NetworkTableEntry tx, ty, ta, tv;
     double v, x, y, area, lidar;
-   public NetworkTable table;
+    public NetworkTable table;
     int lidarSemiRaw;
     public int lidarActive;
     String lidarRaw;
 
-    public Vision(Robot robot, Hatch hatch){
+    public Vision(Robot robot, Hatch hatch) {
         this.robot = robot;
         this.hatch = hatch;
     }
@@ -55,9 +54,9 @@ public class Vision {
         lidarRaw = robot.aNano.readString();
         if (lidarRaw.length() > 1) {
             lidarRaw = lidarRaw.substring(0, lidarRaw.length() - 2);
-            try{
-            lidarSemiRaw = Integer.parseInt(lidarRaw);
-            }catch(Exception e){
+            try {
+                lidarSemiRaw = Integer.parseInt(lidarRaw);
+            } catch (Exception e) {
                 lidarSemiRaw = 0;
             }
         }
@@ -65,29 +64,39 @@ public class Vision {
         System.out.println(lidar);
     }
 
-
     public void visionAim() {
         double xOffset = tx.getDouble(0.0);
+        //System.out.println("true");
 
         // System.out.println(xOffset);
         if (lidarActive == 0) {
+            //System.out.println("true");
             if (Math.abs(xOffset) > 6) {// if the target is far away from center
                 robot.Mleft.set(0.03 * xOffset);
                 robot.Mright.set(0.03 * xOffset);
-            } else if (Math.abs(xOffset) > 3) {// if target is close to center
+            } else if (Math.abs(xOffset) > 4) {// if target is close to center
                 robot.Mleft.set(0.07 * xOffset);
                 robot.Mright.set(0.07 * xOffset);
+               // System.out.println("false");
             } else {
                 lidarActive = 1;
+               // System.out.println("true");
             }
+        }
+        else if(Math.abs(xOffset) > 4){
+            lidarActive =0;
         }
     }
 
     public void visionMove() {
-        if(lidarActive == 1 && lidar >= 6){
-            robot.myRobot.arcadeDrive(.3, 0);
+        if (lidarActive == 1 && lidar > 22) {
+            robot.myRobot.arcadeDrive(.6, 0);
         }
-   
+        else if (lidar <= 22){
+
+            robot.myRobot.stopMotor();
+        }
+
     }
 
 }

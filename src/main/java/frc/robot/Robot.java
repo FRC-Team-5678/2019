@@ -3,7 +3,7 @@
 /* Codded By:Andrew Levin                                                     */
 /* Cleaned Up By:Walter Hicks                                                 */
 /* Team#5678                                                                  */
-/* name # Solaris                                                               */
+/* name# Solaris                                                               */
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.classes.*;
@@ -28,8 +27,8 @@ public class Robot extends TimedRobot {
   public DigitalInput IsArmClose, IsArmOpen;
   int armState, ArmTrans;
   public double regular, reversed, drivedirection;
-   SmartDash dash = new SmartDash(this);
-   public Hatch hatch = new Hatch(this, dash);
+  SmartDash dash = new SmartDash(this);
+  public Hatch hatch = new Hatch(this, dash);
   Intake intake = new Intake(this, dash);
   Vision vision = new Vision(this, hatch);
   public SerialPort aNano = new SerialPort(115200, Port.kUSB1);
@@ -49,17 +48,17 @@ public class Robot extends TimedRobot {
     drive_init();
     vision.sData();
 
-    vision.table.getEntry("ledMode").setNumber(1);    }
+    vision.table.getEntry("ledMode").setNumber(1);
+  }
 
   @Override
   public void autonomousInit() {
     vision.sData();
-    vision.table.getEntry("ledMode").setNumber(0);
   }
 
   @Override
   public void autonomousPeriodic() {
-    vision.table.getEntry("stream").setNumber(1);
+    vision.table.getEntry("stream").setNumber(3);
     vision.sData();
     if (dash.A_Chooser.getSelected() == 1) {
       hatch.Arm_Open();
@@ -94,15 +93,15 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     vision.sData();
-    vision.table.getEntry("ledMode").setNumber(0);
-    lights.up();
-    vision.table.getEntry("stream").setNumber(1);
+   
+        vision.table.getEntry("stream").setNumber(1);
   }
 
   @Override
   public void teleopPeriodic() {
-    
+
     cmain.start();
+    vision.table.getEntry("ledMode").setNumber(3);
     // cmain.stop();
     drive();
     drive_select();
@@ -197,12 +196,16 @@ public class Robot extends TimedRobot {
   }
 
   public void center() {
-    
-      if (main.getTrigger()) {// if trigger is pressed vision.visionAim();
-      vision.visionMove(); } 
-      else if(main.getTriggerReleased()){ vision.lidarActive = 0; } 
+
+    if (main.getRawButton(Robot_Map.vision)) {// if trigger is pressed vision.visionAim();
+      vision.visionAim();
+      vision.visionMove();
+      //System.out.println("1");
+    } else if (main.getRawButtonReleased(Robot_Map.vision)) {
+      vision.lidarActive = 0;
+      //System.out.println("0");
     }
-     
+  }
 
   public void intake() {
     intake.intake();
@@ -211,7 +214,6 @@ public class Robot extends TimedRobot {
   public void arm_trans() {
     if (main.getRawButtonPressed(Robot_Map.armtrigger)) {
       hatch.move();
-      
 
     }
   }
