@@ -3,7 +3,7 @@
 /* Codded By:Andrew Levin                                                     */
 /* Cleaned Up By:Walter Hicks                                                 */
 /* Team#5678                                                                  */
-/* name # orion                                                               */
+/* name # Solaris                                                               */
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
@@ -27,12 +27,12 @@ public class Robot extends TimedRobot {
   public Joystick main;
   public DigitalInput IsArmClose, IsArmOpen;
   int armState, ArmTrans;
-  double regular, reversed, drivedirection;
-  SmartDash dash = new SmartDash(this);
-  Hatch hatch = new Hatch(this, dash);
+  public double regular, reversed, drivedirection;
+   SmartDash dash = new SmartDash(this);
+   public Hatch hatch = new Hatch(this, dash);
   Intake intake = new Intake(this, dash);
-  Vision vision = new Vision(this);
-  public SerialPort aNano = new SerialPort(9600, Port.kUSB1);
+  Vision vision = new Vision(this, hatch);
+  public SerialPort aNano = new SerialPort(115200, Port.kUSB1);
   LED lights = new LED(dash, aNano);
   Auto auto = new Auto(this);
 
@@ -48,17 +48,18 @@ public class Robot extends TimedRobot {
     controls_init();
     drive_init();
     vision.sData();
-    lights.up();
-  }
+
+    vision.table.getEntry("ledMode").setNumber(1);    }
 
   @Override
   public void autonomousInit() {
     vision.sData();
-
+    vision.table.getEntry("ledMode").setNumber(0);
   }
 
   @Override
   public void autonomousPeriodic() {
+    vision.table.getEntry("stream").setNumber(1);
     vision.sData();
     if (dash.A_Chooser.getSelected() == 1) {
       hatch.Arm_Open();
@@ -93,10 +94,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     vision.sData();
+    vision.table.getEntry("ledMode").setNumber(0);
+    lights.up();
+    vision.table.getEntry("stream").setNumber(1);
   }
 
   @Override
   public void teleopPeriodic() {
+    
     cmain.start();
     // cmain.stop();
     drive();
@@ -152,7 +157,7 @@ public class Robot extends TimedRobot {
     myRobot = new DifferentialDrive(Mleft, Mright);
     regular = 1;
     reversed = -1;
-    drivedirection = regular;
+    drivedirection = reversed;
   }
 
   public void drive() {
@@ -171,9 +176,11 @@ public class Robot extends TimedRobot {
       if (drivedirection == reversed) {
         drivedirection = regular;
         lights.up();
+        vision.table.getEntry("stream").setNumber(2);
       } else if (drivedirection == regular) {
         drivedirection = reversed;
         lights.down();
+        vision.table.getEntry("stream").setNumber(1);
 
       }
     }

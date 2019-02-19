@@ -19,15 +19,17 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Vision {
     Robot robot;
+    Hatch hatch;
     NetworkTableEntry tx, ty, ta, tv;
     double v, x, y, area, lidar;
-    NetworkTable table;
+   public NetworkTable table;
     int lidarSemiRaw;
     public int lidarActive;
     String lidarRaw;
 
-    public Vision(Robot robot){
+    public Vision(Robot robot, Hatch hatch){
         this.robot = robot;
+        this.hatch = hatch;
     }
 
     public void network_table_init() {
@@ -53,10 +55,14 @@ public class Vision {
         lidarRaw = robot.aNano.readString();
         if (lidarRaw.length() > 1) {
             lidarRaw = lidarRaw.substring(0, lidarRaw.length() - 2);
+            try{
             lidarSemiRaw = Integer.parseInt(lidarRaw);
+            }catch(Exception e){
+                lidarSemiRaw = 0;
+            }
         }
         lidar = lidarSemiRaw / 25.4;
-       // System.out.println(lidar);
+        System.out.println(lidar);
     }
 
 
@@ -78,8 +84,10 @@ public class Vision {
     }
 
     public void visionMove() {
-        if(lidarActive ==1 && lidar >= 6){
+        if(lidarActive == 1 && lidar >= 6){
             robot.myRobot.arcadeDrive(.3, 0);
         }
+   
     }
+
 }

@@ -20,8 +20,8 @@ public class SmartDash {
     public String Arm_State = "Arm State";
     private static final int Open = 1;
     private static final int Close = 2;
-    private static final int blue = 1;
-    private static final int red = 2;
+    private static final int blue = 20;
+    private static final int red = 10;
     public final SendableChooser<Integer> m_chooser = new SendableChooser<>();
     public final SendableChooser<Integer> A_Chooser = new SendableChooser<>();
 
@@ -33,6 +33,7 @@ public class SmartDash {
         SmartDashboard.putBoolean(Hatch_Key, false);
        m_chooser.setDefaultOption("Blue", blue);
         m_chooser.addOption("Red", red);
+        SmartDashboard.putNumber("Arm Open", robot.hatch.armState);
         SmartDashboard.putData("Side Color", m_chooser);
         SmartDashboard.putData(Arm_State, A_Chooser);
         A_Chooser.setDefaultOption("Open", Open);

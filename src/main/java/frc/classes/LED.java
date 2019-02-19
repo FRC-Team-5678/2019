@@ -24,10 +24,13 @@ public class LED {
     }
 
     public void up(){
-        update(true);
+        System.out.println("up");
+        update(false);
     }
     public void down(){
-        update(false);
+        update(true);
+        System.out.println("down");
+
     }
 
     
@@ -36,7 +39,8 @@ public class LED {
         if(up){
             dir = Robot_Map.Up;
         }
-        //arduino.writeString(dash.m_chooser.toString() +  Integer.toString(dir));
+        System.out.println(dash.m_chooser.getSelected() +  dir);
+        arduino.writeString(Integer.toString(dash.m_chooser.getSelected() +  dir));
         
     }
 }
