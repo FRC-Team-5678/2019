@@ -1,263 +1,226 @@
 /*----------------------------------------------------------------------------*/
 /* Deep Space 2019                                                            */
-/* By:Andrew Levin                                                            */
+/* Codded By:Andrew Levin                                                     */
+/* Cleaned Up By:Walter Hicks                                                 */
 /* Team#5678                                                                  */
-/*                                                                            */
+/* name# Solaris                                                               */
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Ultrasonic;
-import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.SerialPort;
-
-
+import edu.wpi.first.wpilibj.DigitalInput;
+import frc.classes.*;
 
 public class Robot extends TimedRobot {
- 
-  
-  //pnumatics
-  Compressor cmain = new Compressor(0);
-  DoubleSolenoid hatch = new DoubleSolenoid(0, 1);
-  boolean hatchState = false;
-  
-  
-  // Aurdino testing
-    int foo;
-    String spread ="0";
-    SerialPort sp = new SerialPort(9600, SerialPort.Port.kUSB1);
- int number = 0;
-  
-  //ultra sonic input
- //AnalogInput ultraSonic = new AnalogInput(0);
- //Ultrasonic us = new Ultrasonic(1,0);
- 
+  // DECLARATION
+  public Compressor cmain;
+  public DifferentialDrive myRobot;
+  public Spark Mleft, Mright, MIntake, MArm;
+  public Joystick main;
+  public DigitalInput IsArmClose, IsArmOpen;
+  int armState, ArmTrans;
+  public double regular, reversed, drivedirection;
+  SmartDash dash = new SmartDash(this);
+  public Hatch hatch = new Hatch(this, dash);
+  Intake intake = new Intake(this, dash);
+  Vision vision = new Vision(this, hatch);
+  public SerialPort aNano = new SerialPort(115200, Port.kUSB1);
+  LED lights = new LED(dash, aNano);
+  Auto auto = new Auto(this);
 
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-NetworkTableEntry tx = table.getEntry("tx");
-NetworkTableEntry ty = table.getEntry("ty");
-NetworkTableEntry ta = table.getEntry("ta");
-NetworkTableEntry tv = table.getEntry("tv");
-
-
-
-
-//read values periodically
-double v = tv.getDouble(0.0);
-double x = tx.getDouble(0.0);
-double y = ty.getDouble(0.0);
-double area = ta.getDouble(0.0);
-
-//post to smart dashboard periodically
-//SmartDashboard.putNumber("LimelightX", x);
-//SmartDashboard.putNumber("LimelightY", y);
-//SmartDashboard.putNumber("LimelightArea", area);
-  
-  //motor setup
-  Spark left = new Spark(0);
-  Spark right = new Spark(1);
-  
-  //drive setup
-  DifferentialDrive myRobot = new DifferentialDrive(left,right);
-// Joystick setup
-  Joystick main = new Joystick(0);
-  double speedX = main.getRawAxis(0);  //change to whats needed
-  double rotatZ = main.getRawAxis(1);  //change to whats needed
-  
-  
-   
-
- 
-  
- 
- 
   public void robotInit() {
-    sp.enableTermination();
-    sp.setTimeout(.02);
+    aNano.enableTermination();
+    aNano.setReadBufferSize(4);
+    dash.init();
+    motors();
+    vision.network_table_init();
+    vision.limelight_init();
+    pnumatics_init();
+    hatch_init();
+    controls_init();
+    drive_init();
+    vision.sData();
 
+    vision.table.getEntry("ledMode").setNumber(1);
   }
 
   @Override
   public void autonomousInit() {
+    vision.sData();
   }
 
   @Override
   public void autonomousPeriodic() {
+    vision.table.getEntry("stream").setNumber(3);
+    vision.sData();
+    if (dash.A_Chooser.getSelected() == 1) {
+      hatch.Arm_Open();
+      cmain.start();
+      // cmain.stop();
+      drive();
+      drive_select();
+      speed_select();
+      center();
+      intake();
+      arm_trans();
+      hatch();
+      hatch.arm();
+      vision.sData();
+      dash.Always();
+    } else {
+      cmain.start();
+      // cmain.stop();
+      drive();
+      drive_select();
+      speed_select();
+      center();
+      // intake();
+      arm_trans();
+      hatch();
+      hatch.arm();
+      vision.sData();
+      dash.Always();
+    }
   }
 
   @Override
   public void teleopInit() {
+    vision.sData();
    
+        vision.table.getEntry("stream").setNumber(1);
   }
 
   @Override
   public void teleopPeriodic() {
-    
-  
-   
 
-  myRobot.arcadeDrive(main.getY(), main.getX());
-   
+    cmain.start();
+    vision.table.getEntry("ledMode").setNumber(3);
+    // cmain.stop();
+    drive();
+    drive_select();
+    speed_select();
+    center();
+    intake();
+    arm_trans();
+    hatch();
+    hatch.arm();
+    vision.sData();
+    dash.Always();
 
-
-
-
-
-   
-   //Reading from serial
-    spread = sp.readString();
-   
-   //if serial has given a number larger then 1 parse it into a int
-    if(spread.length() > 1)
-   { 
-   spread=spread.substring(0, spread.length() - 2);
-  foo = Integer.parseInt(spread);
-   }
-
-
-
- //if farther the 28 inches from target move forword   
- if(main.getTrigger() & foo > 28){
-     myRobot.arcadeDrive(-.55, 0);
-     System.out.println("active");
-   }
-   //myRobot.stopMotor();
-   if(main.getTriggerPressed()){//is trigger been presses
-    if(hatchState == false){//is the solinoid alredy extended if not extend 
-       hatch.set(DoubleSolenoid.Value.kReverse);
-     hatchState = true;
-     System.out.println("true");
-     //hatch.set(DoubleSolenoid.Value.kOff);
-     //System.out.println(hatch.get());
-   }
-   else{//return to normal
-     hatch.set(DoubleSolenoid.Value.kForward);
-     hatchState = false;
-   }
-     
   }
-}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    //myRobot.setMaxOutput(.5);
-    //myRobot.arcadeDrive(main.getRawAxis(1), main.getRawAxis(0));
-    //double v = tv.getDouble(0.0);
-
-    //if(v == 0){//if no target is in view
-     //   left.set(.3);
-        
-     // }
-      /*if(true){//if target is in camra view
-        double xOffset = tx.getDouble(0.0);
-        double yOffset = ty.getDouble(0.0);
-        
-        if(Math.abs(xOffset)>6){//if the target is far away from center
-          System.out.println("0.02");
-          System.out.println(0.02 * xOffset);
-          left.set(0.03 * xOffset);
-          right.set(0.03* xOffset);
-        }
-        else if(Math.abs(xOffset)>3){//if target is close to center
-          System.out.println("0.05");
-          System.out.println(0.15 * xOffset);
-          left.set(0.07 * xOffset);
-          right.set(0.07 * xOffset);
-        }
-        else{
-          
-          }
-        } */
-      
-   
-        
-   
-    /*if(main.getTrigger()){
-    double xOffset = tx.getDouble(0.0);
-    left.set(.3 * xOffset);
-    right.set(.3* xOffset);
-    }*/
-  
-
-  
 
   @Override
   public void testInit() {
-    
+
   }
 
   @Override
   public void testPeriodic() {
-    //System.out.println(sp.readString(100));
-    int foo;
-    
-   // String test = (sp.readString(10));
-    //System.out.println(test);
-   // sp.flush();
-   spread = sp.readString();
-   if(spread.length() > 1)
-   { 
-   spread=spread.substring(0, spread.length() - 2);
- // String t1 = "";
-  
-  foo = Integer.parseInt(spread);
- System.out.println(spread +" "+ spread.length());
-   }
- 
+    System.out.println("Close: " + IsArmClose.get());
 
+    System.out.println("Open: " + IsArmOpen.get());
 
-//try {
- // spread = spread.trim();
-  //System.out.println(spread + " " + spread.length());
-  //  foo = Integer.parseInt(spread);
- // } catch (NumberFormatException e) {
-    
-//}
-  
-  //int foo = Integer.valueOf(spread);
-  //int foo = Integer.parseInt(spread);
-  //if(){
-    // System.out.println("yup its working");
-    
-   //}
-   //else{
-     //System.out.println("its still working");
-   //}
-    
-
-   //System.out.println(us.getRangeInches());
-//System.out.println(ultraSonic.getVoltage()*ultraToinch);
-//Timer.delay(.001);
-
-  //   double xOffset = tx.getDouble(0.0);
-  //  System.out.println(xOffset);
-  //  System.out.println(Math.abs(xOffset));
-   
-  //double yOffset = ty.getDouble(0.0);
-  //System.out.println((26-21.5)/Math.tan(5+yOffset));
   }
 
+  void motors() {
+    Mleft = new Spark(Robot_Map.left);
+    Mright = new Spark(Robot_Map.right);
+    MIntake = new Spark(Robot_Map.intake);
+    MArm = new Spark(Robot_Map.arm);
+  }
+
+  public void pnumatics_init() {
+    cmain = new Compressor(Robot_Map.compressor);
+  }
+
+  public void hatch_init() {
+    armState = 0;
+    ArmTrans = 0;
+    IsArmClose = new DigitalInput(Robot_Map.LimitArmClosep);
+    IsArmOpen = new DigitalInput(Robot_Map.LimitArmOpenp);
+  }
+
+  public void controls_init() {
+    main = new Joystick(Robot_Map.joysticPort);
+  }
+
+  public void drive_init() {
+    // drive setup
+    myRobot = new DifferentialDrive(Mleft, Mright);
+    regular = 1;
+    reversed = -1;
+    drivedirection = reversed;
+  }
+
+  public void drive() {
+    /*
+     * if (drivedirection == regular) { myRobot.arcadeDrive(-main.getY(),
+     * main.getX()); } // sets drive to regular else if (drivedirection == reversed)
+     * { myRobot.arcadeDrive(main.getY(), main.getX()); } // sets drive to reversed
+     * else { myRobot.arcadeDrive(-main.getY(), main.getX()); } // defaults to
+     * regular drive
+     */
+    myRobot.arcadeDrive(drivedirection * main.getY(), main.getX());
+  }
+
+  public void drive_select() {
+    if (main.getTriggerPressed()) {
+      if (drivedirection == reversed) {
+        drivedirection = regular;
+        lights.up();
+        vision.table.getEntry("stream").setNumber(2);
+      } else if (drivedirection == regular) {
+        drivedirection = reversed;
+        lights.down();
+        vision.table.getEntry("stream").setNumber(1);
+
+      }
+    }
+  }
+
+  public void speed_select() {
+    if (main.getRawButtonPressed(Robot_Map.speedfull)) { // sets speed
+      myRobot.setMaxOutput(1);
+    } else if (main.getRawButtonPressed(Robot_Map.speed3quarter)) {
+      myRobot.setMaxOutput(.75);
+    } else if (main.getRawButtonPressed(Robot_Map.speedhalf)) {
+      myRobot.setMaxOutput(.625);
+    }
+  }
+
+  public void center() {
+
+    if (main.getRawButton(Robot_Map.vision)) {// if trigger is pressed vision.visionAim();
+      vision.visionAim();
+      vision.visionMove();
+      //System.out.println("1");
+    } else if (main.getRawButtonReleased(Robot_Map.vision)) {
+      vision.lidarActive = 0;
+      //System.out.println("0");
+    }
+  }
+
+  public void intake() {
+    intake.intake();
+  }
+
+  public void arm_trans() {
+    if (main.getRawButtonPressed(Robot_Map.armtrigger)) {
+      hatch.move();
+
+    }
+  }
+
+  public void hatch() {
+    if (main.getRawButtonPressed(Robot_Map.hatchTrigger)) {
+      hatch.hatch();
+    }
+  }
 }
