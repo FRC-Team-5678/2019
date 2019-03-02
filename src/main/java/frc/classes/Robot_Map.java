@@ -11,7 +11,7 @@ package frc.classes;
  * Add your docs here.
  */
 public class Robot_Map {
-    //Ports
+    // Ports
     public static int compressor = 0;
     public static int hatch_Solenoid_1 = 6;
     public static int hatch_Solenoid_2 = 7;
@@ -21,25 +21,24 @@ public class Robot_Map {
     public static int arm = 4;
     public static int LimitArmOpenp = 8;
     public static int LimitArmClosep = 0;
-   
-    //Leds
-    public static int Down = 1;
-    public static int Up = 0;
 
-    //Joystic Buttons
+    // Leds
+    public static int Down = 0;
+    public static int Up = 1;
+
+    // Joystic Buttons
     public static int joysticPort = 0;
-    public static int speedhalf = 10;
-    public static int speedfull = 7;
-    public static int hatchTrigger = 4;
+    public static int speedchange = 2;
+    public static int hatchTrigger = 3;
     public static int speed3quarter = 5;
-    public static int intakeButton = 3; // the button number for intake
-    public static int intakerev = 5; // the button number for intake rev
+    public static int intakeButton = 0; // the button number for intake
+    public static int intakerev = 180; // the button number for intake rev
     public static int armretract = 8;
     public static int driveselector = 9;
-    public static int armtrigger = 2;
+    public static int armtrigger = 4;
     public static int armextend = 11;
     public static int vision = 6;
 
-    //Hatch
+    // Hatch
     public static double armSpeed = .6;
 }

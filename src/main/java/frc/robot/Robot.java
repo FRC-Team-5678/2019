@@ -1,9 +1,8 @@
 /*----------------------------------------------------------------------------*/
 /* Deep Space 2019                                                            */
-/* Codded By:Andrew Levin                                                     */
-/* Cleaned Up By:Walter Hicks                                                 */
+/* Codded By:Andrew Levin                                                     */                                             
 /* Team#5678                                                                  */
-/* name# Solaris                                                               */
+/* name# Solaris                                                              */
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
@@ -26,7 +25,7 @@ public class Robot extends TimedRobot {
   public Joystick main;
   public DigitalInput IsArmClose, IsArmOpen;
   int armState, ArmTrans;
-  public double regular, reversed, drivedirection;
+  public double regular, reversed, drivedirection, speedtrigger;
   SmartDash dash = new SmartDash(this);
   public Hatch hatch = new Hatch(this, dash);
   Intake intake = new Intake(this, dash);
@@ -81,7 +80,7 @@ public class Robot extends TimedRobot {
       drive_select();
       speed_select();
       center();
-      // intake();
+      intake();
       arm_trans();
       hatch();
       hatch.arm();
@@ -93,15 +92,15 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     vision.sData();
-   
-        vision.table.getEntry("stream").setNumber(1);
+
+    vision.table.getEntry("stream").setNumber(1);
   }
 
   @Override
   public void teleopPeriodic() {
 
     cmain.start();
-    vision.table.getEntry("ledMode").setNumber(3);
+    vision.table.getEntry("ledMode").setNumber(1);
     // cmain.stop();
     drive();
     drive_select();
@@ -157,7 +156,9 @@ public class Robot extends TimedRobot {
     regular = 1;
     reversed = -1;
     drivedirection = reversed;
-  }
+    speedtrigger = 0;
+    myRobot.setMaxOutput(.75);
+    }
 
   public void drive() {
     /*
@@ -186,24 +187,25 @@ public class Robot extends TimedRobot {
   }
 
   public void speed_select() {
-    if (main.getRawButtonPressed(Robot_Map.speedfull)) { // sets speed
+    if (main.getRawButtonPressed(Robot_Map.speedchange) && speedtrigger == 0) { // sets speed
       myRobot.setMaxOutput(1);
-    } else if (main.getRawButtonPressed(Robot_Map.speed3quarter)) {
+      speedtrigger = 1;
+    } else if (main.getRawButtonPressed(Robot_Map.speedchange) && speedtrigger == 1) {
       myRobot.setMaxOutput(.75);
-    } else if (main.getRawButtonPressed(Robot_Map.speedhalf)) {
-      myRobot.setMaxOutput(.625);
+      speedtrigger = 0;
     }
+
   }
 
   public void center() {
 
-    if (main.getRawButton(Robot_Map.vision)) {// if trigger is pressed vision.visionAim();
+    if (main.getRawButton(Robot_Map.vision)) {// if trigger is pressed
       vision.visionAim();
       vision.visionMove();
-      //System.out.println("1");
+      // System.out.println("1");
     } else if (main.getRawButtonReleased(Robot_Map.vision)) {
       vision.lidarActive = 0;
-      //System.out.println("0");
+      // System.out.println("0");
     }
   }
 

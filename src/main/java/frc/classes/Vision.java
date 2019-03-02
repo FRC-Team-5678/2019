@@ -66,33 +66,31 @@ public class Vision {
 
     public void visionAim() {
         double xOffset = tx.getDouble(0.0);
-        //System.out.println("true");
+        // System.out.println("true");
 
         // System.out.println(xOffset);
         if (lidarActive == 0) {
-            //System.out.println("true");
+            // System.out.println("true");
             if (Math.abs(xOffset) > 6) {// if the target is far away from center
                 robot.Mleft.set(0.03 * xOffset);
                 robot.Mright.set(0.03 * xOffset);
             } else if (Math.abs(xOffset) > 4) {// if target is close to center
                 robot.Mleft.set(0.07 * xOffset);
                 robot.Mright.set(0.07 * xOffset);
-               // System.out.println("false");
+                // System.out.println("false");
             } else {
                 lidarActive = 1;
-               // System.out.println("true");
+                // System.out.println("true");
             }
-        }
-        else if(Math.abs(xOffset) > 4){
-            lidarActive =0;
+        } else if (Math.abs(xOffset) > 4) {
+            lidarActive = 0;
         }
     }
 
     public void visionMove() {
         if (lidarActive == 1 && lidar > 22) {
             robot.myRobot.arcadeDrive(.6, 0);
-        }
-        else if (lidar <= 22){
+        } else if (lidar <= 22) {
 
             robot.myRobot.stopMotor();
         }

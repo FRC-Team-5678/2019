@@ -25,25 +25,25 @@ public class SmartDash {
     public final SendableChooser<Integer> m_chooser = new SendableChooser<>();
     public final SendableChooser<Integer> A_Chooser = new SendableChooser<>();
 
-    public SmartDash(Robot robot){
+    public SmartDash(Robot robot) {
         this.robot = robot;
     }
-    
+
     public void init() {
         SmartDashboard.putBoolean(Hatch_Key, false);
-       m_chooser.setDefaultOption("Blue", blue);
+        m_chooser.setDefaultOption("Blue", blue);
         m_chooser.addOption("Red", red);
         SmartDashboard.putNumber("Arm Open", robot.hatch.armState);
         SmartDashboard.putData("Side Color", m_chooser);
         SmartDashboard.putData(Arm_State, A_Chooser);
         A_Chooser.setDefaultOption("Open", Open);
         A_Chooser.addOption("Close", Close);
-       // SmartDashboard.putBoolean("Open", robot.IsArmOpen.get());
-       // SmartDashboard.putBoolean("close", robot.IsArmClose.get());
-
+        // SmartDashboard.putBoolean("Open", robot.IsArmOpen.get());
+        // SmartDashboard.putBoolean("close", robot.IsArmClose.get());
 
     }
-    public void Always(){
-    
+
+    public void Always() {
+        SmartDashboard.putNumber("Arm Open", robot.hatch.armState);
     }
 }
