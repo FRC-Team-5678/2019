@@ -21,14 +21,14 @@ public class Intake {
         this.dash = dash;
     }
     public void intake(){
-        if (bot.main.getRawButton(Robot_Map.intakeButton)) {// intake and shoter mechinisem power.
+        if (bot.main.getPOV(0) == Robot_Map.intakeButton) {// intake and shoter mechinisem power.
             bot.MIntake.set(.6);
-          } else if (bot.main.getRawButtonReleased(Robot_Map.intakeButton)) {
+          } else if (bot.main.getPOV(0) == -1) {
             bot.MIntake.stopMotor();
           }
-          if (bot.main.getRawButton(Robot_Map.intakerev)) {
+          if (bot.main.getPOV(0) == Robot_Map.intakerev) {
             bot.MIntake.set(-.3);
-          } else if (bot.main.getRawButtonReleased(Robot_Map.intakerev)) {
+          } else if (bot.main.getPOV(0) == -1) {
             bot.MIntake.stopMotor();
           }
     }
