@@ -8,7 +8,7 @@
 package frc.classes;
 
 /**
- * Add your docs here.
+ * this is were all the static verables are set. this includes ports joystick buttons and etc.
  */
 public class Robot_Map {
     // Ports

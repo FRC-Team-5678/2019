@@ -27,29 +27,29 @@ public class Hatch {
         this.bot = robot;
         this.dash = dash;
     }
-    public void move() {
+    public void move() {//tells the arm to start moving
         ArmTrans = 1;
-        System.out.println("Move1");
+        //System.out.println("Move1");
       
     }
 
     public void arm(){
         if (ArmTrans == 1) {
-            System.out.println("Move2");
+           // System.out.println("Move2");
             if (armState == 0) {
-                System.out.println("Move3");
+               // System.out.println("Move3");
                 bot.MArm.set(Robot_Map.armSpeed);
                 if (!bot.IsArmOpen.get()) {
-                    System.out.println("Move4");
+                 //   System.out.println("Move4");
                     ArmTrans = 0;
                     armState = 1;
                     bot.MArm.stopMotor();
                 }
             } else {
-                System.out.println("Move6");
+                //System.out.println("Move6");
                 bot.MArm.set(-Robot_Map.armSpeed);
                 if (!bot.IsArmClose.get()) {
-                    System.out.println("Move5");
+                   // System.out.println("Move5");
                     ArmTrans = 0;
                     armState = 0;
                     bot.MArm.stopMotor();

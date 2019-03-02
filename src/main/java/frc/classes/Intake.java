@@ -26,7 +26,7 @@ public class Intake {
           } else if (bot.main.getPOV(0) == -1) {
             bot.MIntake.stopMotor();
           }
-          if (bot.main.getPOV(0) == Robot_Map.intakerev) {
+          if (bot.main.getPOV(0) == Robot_Map.intakerev) {//intake rev
             bot.MIntake.set(-.3);
           } else if (bot.main.getPOV(0) == -1) {
             bot.MIntake.stopMotor();

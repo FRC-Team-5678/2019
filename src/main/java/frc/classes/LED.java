@@ -23,6 +23,10 @@ public class LED {
       
     }
 
+    public void ledRambow(){
+        arduino.writeString(Integer.toString(31));
+    }
+  
     public void up(){
         System.out.println("up");
         update(false);
