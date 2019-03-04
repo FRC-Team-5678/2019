@@ -1,8 +1,8 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
+/* Deep Space 2019                                                            */
+/* Codded By:Andrew Levin                                                     */
+/* Team#5678                                                                  */
+/* name# Solaris                                                              */
 /*----------------------------------------------------------------------------*/
 
 package frc.classes;
@@ -38,6 +38,7 @@ public class SmartDash {
         SmartDashboard.putData(Arm_State, A_Chooser);
         A_Chooser.setDefaultOption("Open", Open);
         A_Chooser.addOption("Close", Close);
+        SmartDashboard.putNumber("Distince", robot.lidar);
         // SmartDashboard.putBoolean("Open", robot.IsArmOpen.get());
         // SmartDashboard.putBoolean("close", robot.IsArmClose.get());
 
@@ -45,5 +46,6 @@ public class SmartDash {
 
     public void Always() {
         SmartDashboard.putNumber("Arm Open", robot.hatch.armState);
+        SmartDashboard.putNumber("Distince", robot.lidar);
     }
 }

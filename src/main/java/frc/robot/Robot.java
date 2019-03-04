@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------*/
 /* Deep Space 2019                                                            */
-/* Codded By:Andrew Levin                                                     */                                             
+/* Codded By:Andrew Levin                                                     */
 /* Team#5678                                                                  */
 /* name# Solaris                                                              */
 /*----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ public class Robot extends TimedRobot {
   public Joystick main;
   public DigitalInput IsArmClose, IsArmOpen;
   int armState, ArmTrans;
-  public double regular, reversed, drivedirection, speedtrigger;
+  public double regular, reversed, drivedirection, speedtrigger, lidar;
   SmartDash dash = new SmartDash(this);
   public Hatch hatch = new Hatch(this, dash);
   Intake intake = new Intake(this, dash);
@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
     controls_init();
     drive_init();
     vision.sData();
+    lights.ledRambow();
 
     vision.table.getEntry("ledMode").setNumber(1);
   }
@@ -57,6 +58,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    lidar = vision.lidar;
     vision.table.getEntry("stream").setNumber(3);
     vision.sData();
     if (dash.A_Chooser.getSelected() == 1) {
@@ -66,7 +68,6 @@ public class Robot extends TimedRobot {
       drive();
       drive_select();
       speed_select();
-      center();
       intake();
       arm_trans();
       hatch();
@@ -79,7 +80,6 @@ public class Robot extends TimedRobot {
       drive();
       drive_select();
       speed_select();
-      center();
       intake();
       arm_trans();
       hatch();
@@ -98,14 +98,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-
+    lidar = vision.lidar;
     cmain.start();
     vision.table.getEntry("ledMode").setNumber(1);
     // cmain.stop();
     drive();
     drive_select();
     speed_select();
-    center();
     intake();
     arm_trans();
     hatch();
@@ -161,13 +160,6 @@ public class Robot extends TimedRobot {
     }
 
   public void drive() {
-    /*
-     * if (drivedirection == regular) { myRobot.arcadeDrive(-main.getY(),
-     * main.getX()); } // sets drive to regular else if (drivedirection == reversed)
-     * { myRobot.arcadeDrive(main.getY(), main.getX()); } // sets drive to reversed
-     * else { myRobot.arcadeDrive(-main.getY(), main.getX()); } // defaults to
-     * regular drive
-     */
     myRobot.arcadeDrive(drivedirection * main.getY(), main.getX());
   }
 
@@ -195,18 +187,6 @@ public class Robot extends TimedRobot {
       speedtrigger = 0;
     }
 
-  }
-
-  public void center() {
-
-    if (main.getRawButton(Robot_Map.vision)) {// if trigger is pressed
-      vision.visionAim();
-      vision.visionMove();
-      // System.out.println("1");
-    } else if (main.getRawButtonReleased(Robot_Map.vision)) {
-      vision.lidarActive = 0;
-      // System.out.println("0");
-    }
   }
 
   public void intake() {
