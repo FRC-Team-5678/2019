@@ -86,6 +86,7 @@ public class Robot extends TimedRobot {
       hatch.arm();
       vision.sData();
       dash.Always();
+      center();
     }
   }
 
@@ -111,6 +112,7 @@ public class Robot extends TimedRobot {
     hatch.arm();
     vision.sData();
     dash.Always();
+    center();
 
   }
 
@@ -157,7 +159,7 @@ public class Robot extends TimedRobot {
     drivedirection = reversed;
     speedtrigger = 0;
     myRobot.setMaxOutput(.75);
-    }
+  }
 
   public void drive() {
     myRobot.arcadeDrive(drivedirection * main.getY(), main.getX());
@@ -204,5 +206,19 @@ public class Robot extends TimedRobot {
     if (main.getRawButtonPressed(Robot_Map.hatchTrigger)) {
       hatch.hatch();
     }
+  }
+
+  public void center() {
+
+    if (main.getRawButton(Robot_Map.vision)) {// if trigger is pressed vision.visionAim();
+        vision.visionAim();
+        vision.visionMove();
+        // System.out.println("1");
+        // System.out.println("1");
+      } else if (main.getRawButtonReleased(Robot_Map.vision)) {
+        vision.lidarActive = 0;
+        // System.out.println("0");
+        // System.out.println("0");
+      }
   }
 }
