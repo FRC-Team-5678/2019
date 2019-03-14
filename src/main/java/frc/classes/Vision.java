@@ -20,7 +20,7 @@ public class Vision {
     Robot robot;
     Hatch hatch;
     NetworkTableEntry tx, ty, ta, tv;
-   public double v, x, y, area, lidar;
+    public double v, x, y, area, lidar;
     public NetworkTable table;
     int lidarSemiRaw;
     public int lidarActive;
@@ -88,13 +88,12 @@ public class Vision {
     }
 
     public void visionMove() {
-        if (lidarActive == 1 && lidar > 22) {
-            robot.myRobot.arcadeDrive(.6, 0);
-        } else if (lidar <= 22) {
-
-            robot.myRobot.stopMotor();
-        }
-
+        /*
+         * if (lidarActive == 1 && lidar > 22) { robot.myRobot.arcadeDrive(.6, 0); }
+         * else if (lidar <= 22) {
+         * 
+         * robot.myRobot.stopMotor(); }
+         */
     }
 
 }
