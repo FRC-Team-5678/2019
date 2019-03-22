@@ -39,12 +39,14 @@ public class SmartDash {
         A_Chooser.setDefaultOption("Open", Open);
         A_Chooser.addOption("Close", Close);
         SmartDashboard.putNumber("Distince", robot.lidar);
+
         // SmartDashboard.putBoolean("Open", robot.IsArmOpen.get());
         // SmartDashboard.putBoolean("close", robot.IsArmClose.get());
 
     }
 
     public void Always() {
+        System.out.println(robot.lidar);
         SmartDashboard.putNumber("Arm Open", robot.hatch.armState);
         SmartDashboard.putNumber("Distince", robot.lidar);
     }

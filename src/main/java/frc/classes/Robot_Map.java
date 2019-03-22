@@ -28,17 +28,17 @@ public class Robot_Map {
 
     // Joystic Buttons
     public static int joysticPort = 0;
-    public static int speedchange = 2;
+    public static int speedchange = 4;
     public static int hatchTrigger = 3;
     public static int speed3quarter = 5;
     public static int intakeButton = 0; // the button number for intake
     public static int intakerev = 180; // the button number for intake rev
     public static int armretract = 8;
     public static int driveselector = 9;
-    public static int armtrigger = 4;
+    public static int armtrigger = 2;
     public static int armextend = 11;
     public static int vision = 6;
-
+    public static int syan = 8;
     // Hatch
     public static double armSpeed = .6;
 }

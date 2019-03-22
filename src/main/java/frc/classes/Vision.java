@@ -61,7 +61,7 @@ public class Vision {
             }
         }
         lidar = lidarSemiRaw / 25.4;
-        System.out.println(lidar);
+       // System.out.println(lidar);
     }
 
     public void visionAim() {
@@ -85,7 +85,7 @@ public class Vision {
         } else if (Math.abs(xOffset) > 4) {
             lidarActive = 0;
         }
-    }
+    } 
 
     public void visionMove() {
         /*

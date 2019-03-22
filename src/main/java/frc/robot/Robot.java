@@ -24,8 +24,8 @@ public class Robot extends TimedRobot {
   public Spark Mleft, Mright, MIntake, MArm;
   public Joystick main;
   public DigitalInput IsArmClose, IsArmOpen;
-  int armState, ArmTrans;
-  public double regular, reversed, drivedirection, speedtrigger, lidar;
+  int armState, ArmTrans, speedtrigger;
+  public double regular, reversed, drivedirection, lidar;
   SmartDash dash = new SmartDash(this);
   public Hatch hatch = new Hatch(this, dash);
   Intake intake = new Intake(this, dash);
@@ -46,25 +46,27 @@ public class Robot extends TimedRobot {
     controls_init();
     drive_init();
     vision.sData();
-    lights.ledRambow();
-
-    vision.table.getEntry("ledMode").setNumber(1);
+    lights.up();
+   vision.table.getEntry("ledMode").setNumber(1);
   }
 
   @Override
   public void autonomousInit() {
     vision.sData();
+    lights.up();
+    vision.table.getEntry("stream").setNumber(3);
   }
 
   @Override
   public void autonomousPeriodic() {
     lidar = vision.lidar;
-    vision.table.getEntry("stream").setNumber(3);
+    //vision.table.getEntry("stream").setNumber(3);
     vision.sData();
     if (dash.A_Chooser.getSelected() == 1) {
-      hatch.Arm_Open();
+      lidar = vision.lidar;
       cmain.start();
-      // cmain.stop();
+      vision.table.getEntry("ledMode").setNumber(1);
+      // cmain.start();
       drive();
       drive_select();
       speed_select();
@@ -74,9 +76,12 @@ public class Robot extends TimedRobot {
       hatch.arm();
       vision.sData();
       dash.Always();
+      center();
     } else {
+      lidar = vision.lidar;
       cmain.start();
-      // cmain.stop();
+      vision.table.getEntry("ledMode").setNumber(1);
+      // cmain.start();
       drive();
       drive_select();
       speed_select();
@@ -93,16 +98,16 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     vision.sData();
-
+    cmain.start();
     vision.table.getEntry("stream").setNumber(1);
+    vision.table.getEntry("ledMode").setNumber(1);
   }
 
   @Override
   public void teleopPeriodic() {
     lidar = vision.lidar;
-    cmain.start();
-    vision.table.getEntry("ledMode").setNumber(1);
-    // cmain.stop();
+    //vision.table.getEntry("ledMode").setNumber(1);
+    // cmain.start();
     drive();
     drive_select();
     speed_select();
@@ -169,11 +174,11 @@ public class Robot extends TimedRobot {
     if (main.getTriggerPressed()) {
       if (drivedirection == reversed) {
         drivedirection = regular;
-        lights.up();
+        //lights.up();
         vision.table.getEntry("stream").setNumber(2);
       } else if (drivedirection == regular) {
         drivedirection = reversed;
-        lights.down();
+        //lights.down();
         vision.table.getEntry("stream").setNumber(1);
 
       }
@@ -181,12 +186,25 @@ public class Robot extends TimedRobot {
   }
 
   public void speed_select() {
-    if (main.getRawButtonPressed(Robot_Map.speedchange) && speedtrigger == 0) { // sets speed
+    System.out.println(speedtrigger);
+    if (main.getRawButtonPressed(Robot_Map.speedchange) ){
+    if (speedtrigger <= 0) { // sets speed
       myRobot.setMaxOutput(1);
-      speedtrigger = 1;
-    } else if (main.getRawButtonPressed(Robot_Map.speedchange) && speedtrigger == 1) {
+      speedtrigger = 1; 
+      System.out.println("test2");
+    } 
+   else if (speedtrigger >= 1) {
       myRobot.setMaxOutput(.75);
       speedtrigger = 0;
+      System.out.println("test");
+    }
+
+  }
+    if(main.getRawButtonPressed(Robot_Map.syan)){
+      speedtrigger = 2;
+    }
+    else if(speedtrigger == 2){
+      myRobot.setMaxOutput((main.getThrottle()*-1+1)/2);
     }
 
   }
@@ -212,7 +230,7 @@ public class Robot extends TimedRobot {
 
     if (main.getRawButton(Robot_Map.vision)) {// if trigger is pressed vision.visionAim();
         vision.visionAim();
-        vision.visionMove();
+        //vision.visionMove();
         // System.out.println("1");
         // System.out.println("1");
       } else if (main.getRawButtonReleased(Robot_Map.vision)) {
