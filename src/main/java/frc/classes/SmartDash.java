@@ -24,6 +24,7 @@ public class SmartDash {
     private static final int red = 10;
     public final SendableChooser<Integer> m_chooser = new SendableChooser<>();
     public final SendableChooser<Integer> A_Chooser = new SendableChooser<>();
+    public final SendableChooser<Integer> Baby_mode = new SendableChooser<>();
 
     public SmartDash(Robot robot) {
         this.robot = robot;
@@ -39,6 +40,8 @@ public class SmartDash {
         A_Chooser.setDefaultOption("Open", Open);
         A_Chooser.addOption("Close", Close);
         SmartDashboard.putNumber("Distince", robot.lidar);
+        Baby_mode.setDefaultOption("off", 0);
+        Baby_mode.addOption("on", 1);
 
         // SmartDashboard.putBoolean("Open", robot.IsArmOpen.get());
         // SmartDashboard.putBoolean("close", robot.IsArmClose.get());

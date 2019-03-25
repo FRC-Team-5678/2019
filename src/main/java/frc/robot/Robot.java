@@ -101,13 +101,14 @@ public class Robot extends TimedRobot {
     cmain.start();
     vision.table.getEntry("stream").setNumber(1);
     vision.table.getEntry("ledMode").setNumber(1);
+    lights.up();
   }
 
   @Override
   public void teleopPeriodic() {
     lidar = vision.lidar;
     //vision.table.getEntry("ledMode").setNumber(1);
-    // cmain.start();
+    //cmain.start();
     drive();
     drive_select();
     speed_select();
@@ -174,11 +175,11 @@ public class Robot extends TimedRobot {
     if (main.getTriggerPressed()) {
       if (drivedirection == reversed) {
         drivedirection = regular;
-        //lights.up();
+        lights.up();
         vision.table.getEntry("stream").setNumber(2);
       } else if (drivedirection == regular) {
         drivedirection = reversed;
-        //lights.down();
+        lights.down();
         vision.table.getEntry("stream").setNumber(1);
 
       }
