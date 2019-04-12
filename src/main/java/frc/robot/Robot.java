@@ -30,13 +30,19 @@ public class Robot extends TimedRobot {
   public Hatch hatch = new Hatch(this, dash);
   Intake intake = new Intake(this, dash);
   Vision vision = new Vision(this, hatch);
-  public SerialPort aNano = new SerialPort(115200, Port.kUSB1);
+  public SerialPort aNano = null;
   LED lights = new LED(dash, aNano);
   Auto auto = new Auto(this);
 
   public void robotInit() {
-    aNano.enableTermination();
-    aNano.setReadBufferSize(4);
+    try{
+      aNano = new SerialPort(115200, Port.kUSB1);
+      aNano.enableTermination();
+      aNano.setReadBufferSize(4);
+    }catch(Exception e){
+      
+    }
+   
     dash.init();
     motors();
     vision.network_table_init();
@@ -48,6 +54,7 @@ public class Robot extends TimedRobot {
     vision.sData();
     lights.up();
    vision.table.getEntry("ledMode").setNumber(1);
+  
   }
 
   @Override
@@ -73,10 +80,15 @@ public class Robot extends TimedRobot {
       intake();
       arm_trans();
       hatch();
-      hatch.arm();
-      vision.sData();
+      hatch.arm(); try{
+        vision.sData();
+        center();
+      }catch(Exception e){
+        
+      }
+
       dash.Always();
-      center();
+      
     } else {
       lidar = vision.lidar;
       cmain.start();
@@ -89,9 +101,13 @@ public class Robot extends TimedRobot {
       arm_trans();
       hatch();
       hatch.arm();
-      vision.sData();
       dash.Always();
+    }
+    hatch.arm(); try{
+      vision.sData();
       center();
+    }catch(Exception e){
+      
     }
   }
 
@@ -119,6 +135,7 @@ public class Robot extends TimedRobot {
     vision.sData();
     dash.Always();
     center();
+   
 
   }
 
@@ -163,8 +180,8 @@ public class Robot extends TimedRobot {
     regular = 1;
     reversed = -1;
     drivedirection = reversed;
-    speedtrigger = 0;
-    myRobot.setMaxOutput(.75);
+    speedtrigger = 1;
+    myRobot.setMaxOutput(1); 
   }
 
   public void drive() {
@@ -187,7 +204,7 @@ public class Robot extends TimedRobot {
   }
 
   public void speed_select() {
-    System.out.println(speedtrigger);
+   if(dash.Baby_mode.getSelected() == false){ System.out.println(speedtrigger);
     if (main.getRawButtonPressed(Robot_Map.speedchange) ){
     if (speedtrigger <= 0) { // sets speed
       myRobot.setMaxOutput(1);
@@ -207,6 +224,10 @@ public class Robot extends TimedRobot {
     else if(speedtrigger == 2){
       myRobot.setMaxOutput((main.getThrottle()*-1+1)/2);
     }
+  }
+  if(dash.Baby_mode.getSelected() == true){
+    myRobot.setMaxOutput(.4);
+  }
 
   }
 

@@ -34,6 +34,7 @@ public class Hatch {
     }
 
     public void arm(){
+       if(dash.Baby_mode.getSelected() == false){
         if (ArmTrans == 1) {
            // System.out.println("Move2");
             if (armState == 0) {
@@ -56,6 +57,10 @@ public class Hatch {
                 }
             }
         }
+    }
+    if(dash.Baby_mode.getSelected() == true){
+        
+    }
 
     }
 
@@ -70,6 +75,7 @@ public class Hatch {
         SmartDashboard.putBoolean(dash.Hatch_Key, hatchState);
     }
     public void Arm_Open() {
+        if(dash.Baby_mode.getSelected() == false){
         if (Auto_start <= 2) {
             if (hatchState == false) {// is the solinoid alredy extended if not extend
                 hatch.set(DoubleSolenoid.Value.kReverse);
@@ -80,6 +86,8 @@ public class Hatch {
             }
             Auto_start++;
         }
+    }
+    if(dash.Baby_mode.getSelected() == true){}
 
     }
 

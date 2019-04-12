@@ -29,10 +29,20 @@ public class LED {
   
     public void up(){
         System.out.println("up");
-        update(false);
+      try{
+            update(false);
+          }catch(Exception e){
+            
+          }
+        
     }
     public void down(){
-        update(true);
+        try{
+            update(true);
+          }catch(Exception e){
+            
+          }
+        
         System.out.println("down");
 
     }

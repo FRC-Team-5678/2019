@@ -51,7 +51,12 @@ public class Vision {
     }
 
     public void sData() {
-        lidarRaw = robot.aNano.readString();
+        
+        hatch.arm(); try{
+          lidarRaw = robot.aNano.readString();
+          }catch(Exception e){
+            
+          } 
         if (lidarRaw.length() > 1) {
             lidarRaw = lidarRaw.substring(0, lidarRaw.length() - 2);
             try {
@@ -61,7 +66,7 @@ public class Vision {
             }
         }
         lidar = lidarSemiRaw / 25.4;
-       // System.out.println(lidar);
+       System.out.println(lidar);
     }
 
     public void visionAim() {
