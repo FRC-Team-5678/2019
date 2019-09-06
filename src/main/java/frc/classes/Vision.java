@@ -66,7 +66,7 @@ public class Vision {
             }
         }
         lidar = lidarSemiRaw / 25.4;
-       System.out.println(lidar);
+       //.println(lidar);
     }
 
     public void visionAim() {

@@ -35,14 +35,14 @@ public class Robot extends TimedRobot {
   Auto auto = new Auto(this);
 
   public void robotInit() {
-    try{
+    try {
       aNano = new SerialPort(115200, Port.kUSB1);
       aNano.enableTermination();
       aNano.setReadBufferSize(4);
-    }catch(Exception e){
-      
+    } catch (Exception e) {
+
     }
-   
+
     dash.init();
     motors();
     vision.network_table_init();
@@ -53,8 +53,8 @@ public class Robot extends TimedRobot {
     drive_init();
     vision.sData();
     lights.up();
-   vision.table.getEntry("ledMode").setNumber(1);
-  
+    vision.table.getEntry("ledMode").setNumber(1);
+
   }
 
   @Override
@@ -67,11 +67,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     lidar = vision.lidar;
-    //vision.table.getEntry("stream").setNumber(3);
+    // vision.table.getEntry("stream").setNumber(3);
     vision.sData();
     if (dash.A_Chooser.getSelected() == 1) {
       lidar = vision.lidar;
-      cmain.start();
+      //cmain.start();
       vision.table.getEntry("ledMode").setNumber(1);
       // cmain.start();
       drive();
@@ -80,18 +80,19 @@ public class Robot extends TimedRobot {
       intake();
       arm_trans();
       hatch();
-      hatch.arm(); try{
+      hatch.arm();
+      try {
         vision.sData();
         center();
-      }catch(Exception e){
-        
+      } catch (Exception e) {
+
       }
 
       dash.Always();
-      
+
     } else {
       lidar = vision.lidar;
-      cmain.start();
+      //cmain.start();
       vision.table.getEntry("ledMode").setNumber(1);
       // cmain.start();
       drive();
@@ -103,18 +104,21 @@ public class Robot extends TimedRobot {
       hatch.arm();
       dash.Always();
     }
-    hatch.arm(); try{
+    hatch.arm();
+    try {
       vision.sData();
       center();
-    }catch(Exception e){
-      
+    } catch (Exception e) {
+
     }
   }
 
   @Override
   public void teleopInit() {
+    if (dash.Baby_mode.getSelected() == false) {
+     // cmain.start();
+    }
     vision.sData();
-    cmain.start();
     vision.table.getEntry("stream").setNumber(1);
     vision.table.getEntry("ledMode").setNumber(1);
     lights.up();
@@ -123,19 +127,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     lidar = vision.lidar;
-    //vision.table.getEntry("ledMode").setNumber(1);
-    //cmain.start();
+    // vision.table.getEntry("ledMode").setNumber(1);
+    // cmain.start();
     drive();
     drive_select();
     speed_select();
     intake();
     arm_trans();
     hatch();
-    hatch.arm();
+    //hatch.arm();
     vision.sData();
     dash.Always();
     center();
-   
 
   }
 
@@ -146,9 +149,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    System.out.println("Close: " + IsArmClose.get());
+    // System.out.println("Close: " + IsArmClose.get());
 
-    System.out.println("Open: " + IsArmOpen.get());
+    // System.out.println("Open: " + IsArmOpen.get());
 
   }
 
@@ -160,7 +163,7 @@ public class Robot extends TimedRobot {
   }
 
   public void pnumatics_init() {
-    cmain = new Compressor(Robot_Map.compressor);
+    //cmain = new Compressor(Robot_Map.compressor);
   }
 
   public void hatch_init() {
@@ -181,7 +184,7 @@ public class Robot extends TimedRobot {
     reversed = -1;
     drivedirection = reversed;
     speedtrigger = 1;
-    myRobot.setMaxOutput(1); 
+    myRobot.setMaxOutput(.9);
   }
 
   public void drive() {
@@ -193,72 +196,78 @@ public class Robot extends TimedRobot {
       if (drivedirection == reversed) {
         drivedirection = regular;
         lights.up();
-        vision.table.getEntry("stream").setNumber(2);
+        vision.table.getEntry("stream").setNumber(1);
       } else if (drivedirection == regular) {
         drivedirection = reversed;
         lights.down();
-        vision.table.getEntry("stream").setNumber(1);
+        vision.table.getEntry("stream").setNumber(2);
 
       }
     }
   }
 
   public void speed_select() {
-   if(dash.Baby_mode.getSelected() == false){ System.out.println(speedtrigger);
-    if (main.getRawButtonPressed(Robot_Map.speedchange) ){
-    if (speedtrigger <= 0) { // sets speed
-      myRobot.setMaxOutput(1);
-      speedtrigger = 1; 
-      System.out.println("test2");
-    } 
-   else if (speedtrigger >= 1) {
-      myRobot.setMaxOutput(.75);
-      speedtrigger = 0;
-      System.out.println("test");
-    }
+    if (dash.Baby_mode.getSelected() == false) {
+      // System.out.println(speedtrigger);
+      if (main.getRawButtonPressed(Robot_Map.speedchange)) {
+        if (speedtrigger <= 0) { // sets speed
+          myRobot.setMaxOutput(.9);
+          speedtrigger = 1;
+          System.out.println("test2");
+        } else {
+          myRobot.setMaxOutput(.6);
+          speedtrigger = 0;
+          System.out.println("test");
+        }
 
-  }
-    if(main.getRawButtonPressed(Robot_Map.syan)){
-      speedtrigger = 2;
+      }
+      if (main.getRawButtonPressed(Robot_Map.syan)) {
+        speedtrigger = 2;
+      }
+      if (speedtrigger == 2) {
+        myRobot.setMaxOutput((main.getThrottle() * -1 + 1) / 2);
+      }
     }
-    else if(speedtrigger == 2){
-      myRobot.setMaxOutput((main.getThrottle()*-1+1)/2);
+    if (dash.Baby_mode.getSelected() == true) {
+      myRobot.setMaxOutput(.5);
     }
-  }
-  if(dash.Baby_mode.getSelected() == true){
-    myRobot.setMaxOutput(.4);
-  }
 
   }
 
   public void intake() {
-    intake.intake();
-  }
-
-  public void arm_trans() {
-    if (main.getRawButtonPressed(Robot_Map.armtrigger)) {
-      hatch.move();
-
+    if (dash.Baby_mode.getSelected() == false) {
+      intake.intake();
     }
   }
 
-  public void hatch() {
-    if (main.getRawButtonPressed(Robot_Map.hatchTrigger)) {
-      hatch.hatch();
-    }
+  public void arm_trans() {/*
+    if (dash.Baby_mode.getSelected() == false) {
+      if (main.getRawButtonPressed(Robot_Map.armtrigger)) {
+        hatch.move();
+
+      }
+    } */
+  }
+
+  public void hatch() {/*
+    if (dash.Baby_mode.getSelected() == false) {
+      if (main.getRawButtonPressed(Robot_Map.hatchTrigger)) {
+        hatch.hatch();
+      }
+    }*/
   }
 
   public void center() {
 
     if (main.getRawButton(Robot_Map.vision)) {// if trigger is pressed vision.visionAim();
-        vision.visionAim();
-        //vision.visionMove();
-        // System.out.println("1");
-        // System.out.println("1");
-      } else if (main.getRawButtonReleased(Robot_Map.vision)) {
-        vision.lidarActive = 0;
-        // System.out.println("0");
-        // System.out.println("0");
-      }
+      vision.visionAim();
+      // vision.visionMove();
+      // System.out.println("1");
+      // System.out.println("1");
+    } else if (main.getRawButtonReleased(Robot_Map.vision)) {
+      vision.lidarActive = 0;
+      // System.out.println("0");
+      // System.out.println("0");
+    }
   }
 }

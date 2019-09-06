@@ -28,7 +28,7 @@ public class LED {
     }
   
     public void up(){
-        System.out.println("up");
+       // System.out.println("up");
       try{
             update(false);
           }catch(Exception e){
@@ -43,7 +43,7 @@ public class LED {
             
           }
         
-        System.out.println("down");
+        //System.out.println("down");
 
     }
 
@@ -53,7 +53,7 @@ public class LED {
         if(up){
             dir = Robot_Map.Up;
         }
-        System.out.println(dash.m_chooser.getSelected() +  dir);
+        //System.out.println(dash.m_chooser.getSelected() +  dir);
         arduino.writeString(Integer.toString(dash.m_chooser.getSelected() +  dir));
         
     }
